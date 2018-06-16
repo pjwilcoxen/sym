@@ -52,6 +52,16 @@ lang/%.o : lang/%.c
    
 #	$(CC) $(OPT) -c $< -o $*.$(OBJ)
 
+all : readme_usage.txt readme_syntax.txt
+
+readme_syntax.txt : $(EXE)
+	-rm -f $@
+	$(EXE) -syntax > $@
+
+readme_usage.txt : $(EXE)
+	-rm -f $@
+	$(EXE) -doc > $@
+
 $(EXE) : sym.$(OBJ) $(OBJS) $(LANGS) 
 	$(CC) $(OPT) $(EOPT) sym.$(OBJ) $(OBJS) $(LANGLINK)
 
@@ -82,7 +92,7 @@ backup :
 	datename -t sym.zip
 
 clean:
-	rm -f *.$(OBJ) lang/*.$(OBJ) parse.c $(EXE)
+	rm -f *.$(OBJ) lang/*.$(OBJ) parse.c $(EXE) readme_*.txt
 
 #
 # header file dependencies 
