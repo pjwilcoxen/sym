@@ -1,0 +1,28 @@
+#! /usr/bin/perl
+
+open( INP, "< build.h" ) || die( "Could not read build.h: " );
+for( $n="0" ; $n=="0" ; ) {
+   $_ = <INP>;
+   ($n) = ( m/=\D*(\d+)/ );
+   }
+close( INP );
+
+$n++;
+
+open( OUT, "> build.h" ) || die( "Could not write build.h: " );
+
+@now = localtime();
+$yr = $now[5]+1900;
+$mo = $now[4]+1;
+$dy = $now[3];
+
+$str = sprintf("%d/%2.2d/%2.2d",$yr,$mo,$dy);
+
+print OUT <<EOF ;
+#ifndef BUILD_H
+#define BUILD_H
+
+static char *build = "$n ($str)" ;
+
+#endif /* BUILD_H */
+EOF
