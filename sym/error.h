@@ -9,7 +9,6 @@ void fatal_error(char*,char*);
 void show_error(char*,char*,char*);
 void validate(void*,int,char*);
 
-#define DBG ((debug && myDEBUG)||debugforce)
 #define FAULT(astr) show_error("Fatal Internal Fault","%s",astr)
 
 #endif /* ERROR_H */

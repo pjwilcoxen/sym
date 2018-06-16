@@ -4,7 +4,7 @@
 //  Core include file for the program.  Used by both front and 
 //  backends.
 //  
-//  $Id: sym.h 57 2018-06-16 19:50:13Z wilcoxen $
+//  $Id: sym.h 59 2018-06-16 20:56:55Z wilcoxen $
 //----------------------------------------------------------------------
 
 #ifndef SYMBOL_H
@@ -36,5 +36,7 @@ extern int intertemporal;
 extern int mergeonly;
 extern int only_first;
 extern int only_last;
+
+#define DBG ((debug && myDEBUG)||debugforce)
 
 #endif /* SYMBOL_H */
