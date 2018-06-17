@@ -52,13 +52,13 @@ lang/%.o : lang/%.c
    
 #	$(CC) $(OPT) -c $< -o $*.$(OBJ)
 
-all : readme_usage.md readme_syntax.md
+all : ../doc/usage.md ../doc/syntax.md
 
-readme_syntax.md : $(EXE)
+../doc/syntax.md : $(EXE)
 	-rm -f $@
 	$(EXE) -syntax > $@
 
-readme_usage.md : $(EXE)
+../doc/usage.md : $(EXE)
 	-rm -f $@
 	$(EXE) -doc > $@
 
