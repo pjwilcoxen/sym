@@ -5,7 +5,7 @@
  *  Driver routine for symbolic math program.  Processes the command
  *  line and then calls yyparse() to do the actual work.
  *
- *  $Id: sym.c 57 2018-06-16 19:50:13Z wilcoxen $
+ *  $Id: sym.c 60 2018-06-17 01:51:28Z wilcoxen $
  *--------------------------------------------------------------------*/
 
 #include "sym.h"
@@ -43,10 +43,10 @@ char *usage   = "symbol [options] <language> <symfile> <codefile>";
 char *options = "/version /d /dd /doc /first /last /syntax /merge_only";
 
 char *doc = "\
-   Translates models from algebraic form into several programming languages.\n\
-   For a summary of the input language, use the /syntax option.  For detailed\n\
-   information about the versions of the main program and the individual\n\
-   language support modules, use the /version option.\n\
+Translates models from algebraic form into several programming languages.\n\
+For a summary of the input language, use the /syntax option.  For detailed\n\
+information about the versions of the main program and the individual\n\
+language support modules, use the /version option.\n\
 ";
 
 
@@ -69,6 +69,7 @@ char *argv[];
    char *basename,*ext;
    char *lang;
    char *rev;
+   char *h1,*h2;
    List *known;
    Item *thislang;
    int  do_doc;
@@ -107,17 +108,22 @@ char *argv[];
    
    if( do_doc || do_usage )
       {
-      printf( "\nSymbol v%s\n\n", rev );
-      if( do_doc )
+      h1 = do_doc ? "# " : "" ;
+      h2 = do_doc ? "## " : "" ;
+      if( do_doc ) {
+         printf( "%sSym Usage\n",h1 );
          printf( "%s\n", doc );
-      printf( "Usage:\n   %s\n\n", usage );
-      printf( "Options:\n   %s\n\n", options );
-      printf( "Languages:\n   ");
+      }
+      printf( "\n%sUsage:\n    %s\n\n", h2, usage );
+      printf( "%sOptions:\n    %s\n\n", h2, options );
+      printf( "%sLanguages:\n    ", h2);
       for( thislang=known->first ; thislang ; thislang=thislang->next )
          printf("/%s ",thislang->str);
       printf( "\n\n");
+      if( do_doc )
+         printf( "Version %s\n",rev );
       if( do_usage )
-         printf( "See also:\n   symbol /doc\n" );
+         printf( "See also:\n    sym -doc and sym -syntax\n" );
       exit(0);
       }
 

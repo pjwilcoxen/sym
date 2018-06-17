@@ -20,8 +20,6 @@
 
 #define  myDEBUG 0
 
-void symdeclare(Symboltype,char*,List*,char*,List*);
-
 extern FILE *info;
 
 //====================================================================

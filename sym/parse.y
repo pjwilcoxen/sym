@@ -38,12 +38,14 @@ void yyerror(char*);
 %%
 
 /*
-.. Summary of Sym Input File Syntax
+.. # Sym Input File Syntax
 ..
-..    Input files consist of: (1) set declarations, (2) parameter
-..    and variable declarations, and (3) equations.  All statements
-..    must end with a semicolon.  Anything from a // to the end of 
-..    the line is taken to be a comment and is ignored.  
+.. Input files consist of: **set**, **parameter** and **variable** 
+.. declarations, and **equations**. All statements must end with a 
+.. semicolon. Anything from a // to the end of the line is taken to 
+.. be a comment and is ignored. Items in square brackets are
+.. optional and may be omitted. Attributes are target-language 
+.. dependent: there are no attributes applicable to all languages.
 ..
 */
 
@@ -56,17 +58,24 @@ stmt     : /* empty */
          | eqn 
          ;
 /*
-.. Set Declarations:
+.. ## Set Declarations:
 ..
-..    SET name (elements)              ['description'] ;
-..    SET name = prevset               ['description'] ;
-..    SET name = prevset + (elements)  ['description'] ;
-..    SET name = prevset - (elements)  ['description'] ;
+.. Set elements do not need to be unique as long as sets using the
+.. same element names cannot be mistaken for subsets of each other.
+.. For example, elements a and b will distinct in set1(a,b,c) and 
+.. set2(a,b,d). However, using an additional set3(a,b) should be
+.. avoided and will be flagged as an error in subsequent versions
+.. of sym.
 ..
-.. Variable and Parameter Declarations:
+..     SET name (elements)              ['description'] ;
+..     SET name = prevset               ['description'] ;
+..     SET name = prevset + (elements)  ['description'] ;
+..     SET name = prevset - (elements)  ['description'] ;
+..
+.. ## Variable and Parameter Declarations:
 .. 
-..    PARAMETER name [(sets)]   ['description'] [attributes] ;
-..    VARIABLE  name [(sets)]   ['description'] [attributes] ;
+..     PARAMETER name [(sets)]   ['description'] [attributes] ;
+..     VARIABLE  name [(sets)]   ['description'] [attributes] ;
 .. 
 */
 
@@ -111,9 +120,9 @@ forl     : FIRST
          ;
          
 /*
-.. Equations:
+.. ## Equations:
 ..
-..    [EQUATION name|/name/] [sets:] expr = expr [attributes];
+..     [EQUATION name|/name/] [sets:] expr = expr [attributes];
 ..
 */
 
@@ -151,20 +160,20 @@ item     : NAME
          ;
 
 /*
-.. Expressions:
+.. ## Expressions:
 ..
-..    expr + expr
-..    expr - expr
-..    expr * expr
-..    expr / expr
-..    expr ^ expr
-..    - expr
-..    ( expr )
-..    function
-..    lead(variable)
-..    lag(variable)
-..    variable
-..    number
+..     expr + expr
+..     expr - expr
+..     expr * expr
+..     expr / expr
+..     expr ^ expr
+..     - expr
+..     ( expr )
+..     function
+..     lead(variable)
+..     lag(variable)
+..     variable
+..     number
 ..
 */
 
@@ -184,12 +193,12 @@ expr     : expr '+' expr      { $$ = newnode(add, "+"  ,$1,$3); }
          ;
 
 /*
-.. Variable References:
+.. ## Variable References:
 ..
-..    name
-..    name#list
-..    name(sets)
-..    name(sets)#list
+..     name
+..     name#list
+..     name(sets)
+..     name(sets)#list
 ..
 */
 
@@ -200,14 +209,13 @@ var      : NAME                       { $$ = $1; }
          ;
 
 /*
-.. Functions:
+.. ## Functions:
 ..
-..    LOG(expr)  Note: synonym for ln()      
-..    LN (expr)
-..    EXP(expr)
-..
-..    SUM (set,expr)
-..    PROD(set,expr)
+..     EXP(expr)
+..     LN(expr)      
+..     LOG(expr)
+..     PROD(set,expr)
+..     SUM(set,expr)
 ..
 */
 
@@ -247,4 +255,5 @@ char *getlasttoken()
 }
 
 /*  Include lexical analyzer so yylex and yyparse can share tokens  */
+
 #include "lexical.c"

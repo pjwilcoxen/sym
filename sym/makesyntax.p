@@ -9,7 +9,7 @@ open( OUT, "> $tar" ) || die( "Could not open a new $tar\n" );
 print OUT "#include <stdio.h>\n";
 print OUT "void syntax()\n";
 print OUT "{\n";
-print OUT "   char from_parse_y[]={\"\\n\\\n";
+print OUT "   char from_parse_y[]={\"\\\n";
 
 while( <INP> ){ last if /^%%/; }
 while( <INP> )

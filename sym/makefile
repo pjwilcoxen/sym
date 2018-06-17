@@ -52,13 +52,13 @@ lang/%.o : lang/%.c
    
 #	$(CC) $(OPT) -c $< -o $*.$(OBJ)
 
-all : readme_usage.txt readme_syntax.txt
+all : readme_usage.md readme_syntax.md
 
-readme_syntax.txt : $(EXE)
+readme_syntax.md : $(EXE)
 	-rm -f $@
 	$(EXE) -syntax > $@
 
-readme_usage.txt : $(EXE)
+readme_usage.md : $(EXE)
 	-rm -f $@
 	$(EXE) -doc > $@
 
@@ -92,7 +92,7 @@ backup :
 	datename -t sym.zip
 
 clean:
-	rm -f *.$(OBJ) lang/*.$(OBJ) parse.c $(EXE) readme_*.txt
+	rm -f *.$(OBJ) lang/*.$(OBJ) parse.c $(EXE) readme_*.md
 
 #
 # header file dependencies 
