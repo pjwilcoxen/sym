@@ -5,7 +5,7 @@
  *  Driver routine for symbolic math program.  Processes the command
  *  line and then calls yyparse() to do the actual work.
  *
- *  $Id: sym.c 60 2018-06-17 01:51:28Z wilcoxen $
+ *  $Id: sym.c 65 2018-06-17 02:56:59Z wilcoxen $
  *--------------------------------------------------------------------*/
 
 #include "sym.h"
@@ -39,14 +39,14 @@ int only_first=0;
 int only_last=0;
 int mergeonly=0;
 
-char *usage   = "symbol [options] <language> <symfile> <codefile>";
-char *options = "/version /d /dd /doc /first /last /syntax /merge_only";
+char *usage   = "sym [options] <language> <symfile> <codefile>";
+char *options = "-version -d -dd -doc -first -last -syntax -merge_only";
 
 char *doc = "\
 Translates models from algebraic form into several programming languages.\n\
-For a summary of the input language, use the /syntax option.  For detailed\n\
+For a summary of the input language, use the -syntax option.  For detailed\n\
 information about the versions of the main program and the individual\n\
-language support modules, use the /version option.\n\
+language support modules, use the -version option.\n\
 ";
 
 
@@ -83,11 +83,11 @@ char *argv[];
 
    build_langinfo();
    known = knownlangs();
-   validate( known, LISTOBJ, "symbol main program" );
+   validate( known, LISTOBJ, "sym main program" );
 
    if( isoption("version",1) )
       {
-      printf( "Symbol build %s\n", build);
+      printf( "Sym build %s\n", build);
       printf( "--- compiler: %s\n",builtby());
       printf( "--- base code: v%s\n", rev );
       known = langvers();
@@ -118,10 +118,10 @@ char *argv[];
       printf( "%sOptions:\n    %s\n\n", h2, options );
       printf( "%sLanguages:\n    ", h2);
       for( thislang=known->first ; thislang ; thislang=thislang->next )
-         printf("/%s ",thislang->str);
+         printf("-%s ",thislang->str);
       printf( "\n\n");
       if( do_doc )
-         printf( "Version %s\n",rev );
+         printf( "Version %s\n",svnver );
       if( do_usage )
          printf( "See also:\n    sym -doc and sym -syntax\n" );
       exit(0);
@@ -135,7 +135,7 @@ char *argv[];
 
    if( only_first && only_last )
       {
-      printf( "Cannot use /first and /last simultaneously\n\n" );
+      printf( "Cannot use -first and -last simultaneously\n\n" );
       exit(0);
       }
 
@@ -178,7 +178,7 @@ char *argv[];
       if( info==0 )
          fatal_error("Could not open output list file %s\n",listfile);
       fprintf(info,"Run Specifications:\n");
-      fprintf(info,"   Symbol build: %s\n", build);
+      fprintf(info,"   Sym build: %s\n", build);
       fprintf(info,"   Target language: %s\n", lang);
    }
 
