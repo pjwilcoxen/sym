@@ -3,7 +3,7 @@
 open( INP, "< build.h" ) || die( "Could not read build.h: " );
 for( $n="0" ; $n=="0" ; ) {
    $_ = <INP>;
-   ($n) = ( m/=\D*(\d+)/ );
+   ($n) = ( m/build \D*(\d+)/ );
    }
 close( INP );
 
@@ -17,15 +17,14 @@ $mo = $now[4]+1;
 $dy = $now[3];
 
 $str = sprintf("%d/%2.2d/%2.2d",$yr,$mo,$dy);
-$git = `git tag -l --points-at HEAD`;
+$git = `git tag -l`;
 $git =~ s/\s*$//;
 
 print OUT <<EOF ;
 #ifndef BUILD_H
 #define BUILD_H
 
-static char *build = "$n ($str)" ;
-static char *gitver = "$git build $n" ;
+static char *verstr = "$git build $n ($str)" ;
 
 #endif /* BUILD_H */
 EOF

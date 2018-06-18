@@ -87,7 +87,7 @@ char *argv[];
 
    if( isoption("version",1) )
       {
-      printf( "Sym build %s\n", build);
+      printf( "Sym %s\n",verstr);
       printf( "--- compiler: %s\n",builtby());
       printf( "--- base code: v%s\n", rev );
       known = langvers();
@@ -121,7 +121,7 @@ char *argv[];
          printf("-%s ",thislang->str);
       printf( "\n\n");
       if( do_doc )
-         printf( "Version %s\n",gitver );
+         printf( "Sym %s\n",verstr );
       if( do_usage )
          printf( "See also:\n    sym -doc and sym -syntax\n" );
       exit(0);
@@ -178,7 +178,7 @@ char *argv[];
       if( info==0 )
          fatal_error("Could not open output list file %s\n",listfile);
       fprintf(info,"Run Specifications:\n");
-      fprintf(info,"   Sym build: %s\n", build);
+      fprintf(info,"   Sym %s\n", verstr);
       fprintf(info,"   Target language: %s\n", lang);
    }
 
