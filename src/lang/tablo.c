@@ -233,7 +233,7 @@ static void Tablo_writedecs()
       
       iqual = cts->istime ? "(intertemporal) " : "" ;
       stmt  = concat(6,"set ",iqual,name," (",slprint(val),") ;"); 
-      wrap_write(stmt,1);
+      wrap_write(stmt,1,1);
       free(stmt);
 
       freelist(val);
@@ -273,7 +273,7 @@ static void Tablo_writedecs()
       ref  = tablovar(name,val,0);
       
       stmt = concat(4,"coefficient ",qual,ref," ;");
-      wrap_write(stmt,1);
+      wrap_write(stmt,1,0);
       free(stmt);
       
       freelist(val);
@@ -299,7 +299,7 @@ static void Tablo_writedecs()
       
       sprintf(buf,"%3.3d",hdr++);
       stmt = concat(7,"read ",qual,"\n   ",ref," from file param header \"H",buf,"\" ;");
-      wrap_write(stmt,1);
+      wrap_write(stmt,1,0);
       free(stmt);
       
       free(name);
@@ -322,7 +322,7 @@ static void Tablo_writedecs()
       ref  = tablovar(name,val,0);
       
       stmt = concat(4,"variable ",qual,ref," ;");
-      wrap_write(stmt,1);
+      wrap_write(stmt,1,0);
       free(stmt);
       
       free(name);
@@ -346,7 +346,7 @@ static void Tablo_writedecs()
       
       sprintf(buf,"%3.3d",hdr++);
       stmt = concat(7,"read ",qual,"\n   ",ref," from file base header \"H",buf,"\" ;");
-      wrap_write(stmt,1);
+      wrap_write(stmt,1,0);
       free(stmt);
       
       free(name);

@@ -312,10 +312,11 @@ void write_file(char *basename)
  *  write a line to the code file but wrap it to keep the line from
  *  being too long.
  *--------------------------------------------------------------------*/
-void wrap_write(char *line, int addcr)
+void wrap_write(char *line, int addcr, int commaok)
 {
    char *end,op,*dup,*rest;
-   
+   int do_wrap;
+
    dup  = strdup(line);
    rest = dup;
    
@@ -338,16 +339,21 @@ void wrap_write(char *line, int addcr)
          continue;
          }
          
-      for( end=rest+linelength ; end > rest ; end-- )
-         if( *end=='+' || *end=='-' || *end=='*' || *end=='/' || *end=='=' || *end=='^' || isspace(*end) )
+      for( end=rest+linelength ; end > rest ; end-- ) 
+         {
+         do_wrap = isspace(*end);
+         do_wrap |= (*end=='+' || *end=='-' || *end=='*' || *end=='/' || *end=='=' || *end=='^');
+         do_wrap |= (commaok && *end==',');
+         if( do_wrap )
             {
             op   = *end;
             *end = '\0';
             fprintf(code,"%s\n   ",rest);
             *end = op;
             break;
-            }
-            
+            }            
+         }
+
       if( rest == end )
          fatal_error("Could not wrap long line:\n%s\n",line);
 
@@ -398,9 +404,9 @@ void show_eq(void *eq, List *setlist, List *sublist)
       for( head=all ; tail=strchr(head,'\n') ; head=tail )
          {
          *tail++ = '\0';
-         wrap_write(head,1);
+         wrap_write(head,1,0);
          }
-      wrap_write(head,0);
+      wrap_write(head,0,0);
       }
       
    free(all);

@@ -36,7 +36,7 @@ typedef struct
 List* sub_offset(char*,List*,int);
 List* sub_tuple(char*,List*);
 
-void wrap_write(char*,int);
+void wrap_write(char*,int,int);
 void write_file(char*);
 
 #endif /* OUTPUT_H */
