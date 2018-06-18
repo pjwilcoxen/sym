@@ -17,15 +17,15 @@ $mo = $now[4]+1;
 $dy = $now[3];
 
 $str = sprintf("%d/%2.2d/%2.2d",$yr,$mo,$dy);
-$svn = `svnversion`;
-$svn =~ s/\s*$//;
+$git = `git tag -l --points-at HEAD`;
+$git =~ s/\s*$//;
 
 print OUT <<EOF ;
 #ifndef BUILD_H
 #define BUILD_H
 
 static char *build = "$n ($str)" ;
-static char *svnver = "$svn" ;
+static char *gitver = "$git build $n" ;
 
 #endif /* BUILD_H */
 EOF

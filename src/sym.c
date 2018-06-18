@@ -121,7 +121,7 @@ char *argv[];
          printf("-%s ",thislang->str);
       printf( "\n\n");
       if( do_doc )
-         printf( "Version %s\n",svnver );
+         printf( "Version %s\n",gitver );
       if( do_usage )
          printf( "See also:\n    sym -doc and sym -syntax\n" );
       exit(0);
