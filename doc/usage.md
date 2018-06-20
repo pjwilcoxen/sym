@@ -14,4 +14,4 @@ language support modules, use the -version option.
 ## Languages:
     -debug -html -msgproc -oxgs -oxgst -oxnewton -tablo -troll 
 
-Sym v2.0 build 642 (2018/06/20)
+Sym v2.0 build 644 (2018/06/20)
