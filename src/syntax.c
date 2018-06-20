@@ -22,6 +22,7 @@ of sym.\n\
 \n\
     SET name (elements)              ['description'] ;\n\
     SET name = prevset               ['description'] ;\n\
+    SET name = prevset(elements)     ['description'] ;\n\
     SET name = prevset + (elements)  ['description'] ;\n\
     SET name = prevset - (elements)  ['description'] ;\n\
 \n\

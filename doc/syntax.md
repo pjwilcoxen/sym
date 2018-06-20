@@ -18,6 +18,7 @@ of sym.
 
     SET name (elements)              ['description'] ;
     SET name = prevset               ['description'] ;
+    SET name = prevset(elements)     ['description'] ;
     SET name = prevset + (elements)  ['description'] ;
     SET name = prevset - (elements)  ['description'] ;
 

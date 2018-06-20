@@ -433,7 +433,7 @@ typedef struct {
 } YYSTACKDATA;
 /* variables for the parser stack */
 static YYSTACKDATA yystack;
-#line 240 "parse.y"
+#line 241 "parse.y"
 
 
 
@@ -654,263 +654,263 @@ yyreduce:
     switch (yyn)
     {
 case 6:
-#line 82 "parse.y"
+#line 83 "parse.y"
 	{ declare(yystack.l_mark[-1],yystack.l_mark[0], 0, 0, 0); }
 break;
 case 7:
-#line 83 "parse.y"
+#line 84 "parse.y"
 	{ declare(yystack.l_mark[-2],yystack.l_mark[-1], 0,yystack.l_mark[0], 0); }
 break;
 case 8:
-#line 84 "parse.y"
+#line 85 "parse.y"
 	{ declare(yystack.l_mark[-2],yystack.l_mark[-1], 0, 0,yystack.l_mark[0]); }
 break;
 case 9:
-#line 85 "parse.y"
+#line 86 "parse.y"
 	{ declare(yystack.l_mark[-3],yystack.l_mark[-2], 0,yystack.l_mark[-1],yystack.l_mark[0]); }
 break;
 case 10:
-#line 86 "parse.y"
+#line 87 "parse.y"
 	{ declare(yystack.l_mark[-3],yystack.l_mark[-2], 0,yystack.l_mark[0],yystack.l_mark[-1]); }
 break;
 case 11:
-#line 87 "parse.y"
+#line 88 "parse.y"
 	{ declare(yystack.l_mark[-4],yystack.l_mark[-3],yystack.l_mark[-1], 0, 0); }
 break;
 case 12:
-#line 88 "parse.y"
+#line 89 "parse.y"
 	{ declare(yystack.l_mark[-5],yystack.l_mark[-4],yystack.l_mark[-2],yystack.l_mark[0], 0); }
 break;
 case 13:
-#line 89 "parse.y"
+#line 90 "parse.y"
 	{ declare(yystack.l_mark[-5],yystack.l_mark[-4],yystack.l_mark[-2], 0,yystack.l_mark[0]); }
 break;
 case 14:
-#line 90 "parse.y"
+#line 91 "parse.y"
 	{ declare(yystack.l_mark[-6],yystack.l_mark[-5],yystack.l_mark[-3],yystack.l_mark[-1],yystack.l_mark[0]); }
 break;
 case 15:
-#line 91 "parse.y"
+#line 92 "parse.y"
 	{ declare(yystack.l_mark[-6],yystack.l_mark[-5],yystack.l_mark[-3],yystack.l_mark[0],yystack.l_mark[-1]); }
 break;
 case 19:
-#line 100 "parse.y"
+#line 101 "parse.y"
 	{ declare(yystack.l_mark[-4],yystack.l_mark[-3],yystack.l_mark[-1], 0, 0) ; }
 break;
 case 20:
-#line 101 "parse.y"
+#line 102 "parse.y"
 	{ declare(yystack.l_mark[-5],yystack.l_mark[-4],yystack.l_mark[-2],yystack.l_mark[0], 0) ; }
 break;
 case 21:
-#line 102 "parse.y"
+#line 103 "parse.y"
 	{ decset (yystack.l_mark[-2],yystack.l_mark[0],nul, 0, 0); }
 break;
 case 22:
-#line 103 "parse.y"
+#line 104 "parse.y"
 	{ decset (yystack.l_mark[-3],yystack.l_mark[-1],nul, 0,yystack.l_mark[0]); }
 break;
 case 23:
-#line 104 "parse.y"
+#line 105 "parse.y"
 	{ decset (yystack.l_mark[-5],yystack.l_mark[-3],equ,yystack.l_mark[-1], 0); }
 break;
 case 24:
-#line 105 "parse.y"
+#line 106 "parse.y"
 	{ decset (yystack.l_mark[-6],yystack.l_mark[-4],equ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 25:
-#line 106 "parse.y"
+#line 107 "parse.y"
 	{ decset (yystack.l_mark[-5],yystack.l_mark[-3],equ,yystack.l_mark[-1], 0); }
 break;
 case 26:
-#line 107 "parse.y"
+#line 108 "parse.y"
 	{ decset (yystack.l_mark[-6],yystack.l_mark[-4],equ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 27:
-#line 108 "parse.y"
+#line 109 "parse.y"
 	{ decset (yystack.l_mark[-6],yystack.l_mark[-4],add,yystack.l_mark[-1], 0); }
 break;
 case 28:
-#line 109 "parse.y"
+#line 110 "parse.y"
 	{ decset (yystack.l_mark[-7],yystack.l_mark[-5],add,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 29:
-#line 110 "parse.y"
+#line 111 "parse.y"
 	{ decset (yystack.l_mark[-6],yystack.l_mark[-4],sub,yystack.l_mark[-1], 0); }
 break;
 case 30:
-#line 111 "parse.y"
+#line 112 "parse.y"
 	{ decset (yystack.l_mark[-7],yystack.l_mark[-5],sub,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 35:
-#line 129 "parse.y"
+#line 130 "parse.y"
 	{ neweqn( 0,yystack.l_mark[-2],yystack.l_mark[0], 0, 0); }
 break;
 case 36:
-#line 130 "parse.y"
+#line 131 "parse.y"
 	{ neweqn( 0,yystack.l_mark[-3],yystack.l_mark[-1],yystack.l_mark[0], 0); }
 break;
 case 37:
-#line 131 "parse.y"
+#line 132 "parse.y"
 	{ neweqn(yystack.l_mark[-3],yystack.l_mark[-2],yystack.l_mark[0], 0, 0); }
 break;
 case 38:
-#line 132 "parse.y"
+#line 133 "parse.y"
 	{ neweqn(yystack.l_mark[-4],yystack.l_mark[-3],yystack.l_mark[-1],yystack.l_mark[0], 0); }
 break;
 case 39:
-#line 133 "parse.y"
+#line 134 "parse.y"
 	{ neweqn( 0,yystack.l_mark[-2],yystack.l_mark[0], 0,yystack.l_mark[-3]); }
 break;
 case 40:
-#line 134 "parse.y"
+#line 135 "parse.y"
 	{ neweqn( 0,yystack.l_mark[-3],yystack.l_mark[-1],yystack.l_mark[0],yystack.l_mark[-4]); }
 break;
 case 41:
-#line 135 "parse.y"
+#line 136 "parse.y"
 	{ neweqn(yystack.l_mark[-3],yystack.l_mark[-2],yystack.l_mark[0], 0,yystack.l_mark[-4]); }
 break;
 case 42:
-#line 136 "parse.y"
+#line 137 "parse.y"
 	{ neweqn(yystack.l_mark[-4],yystack.l_mark[-3],yystack.l_mark[-1],yystack.l_mark[0],yystack.l_mark[-5]); }
 break;
 case 43:
-#line 139 "parse.y"
+#line 140 "parse.y"
 	{ yyval = yystack.l_mark[-1]; }
 break;
 case 44:
-#line 140 "parse.y"
+#line 141 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
 case 45:
-#line 143 "parse.y"
+#line 144 "parse.y"
 	{ yyval = yystack.l_mark[-1]; }
 break;
 case 46:
-#line 146 "parse.y"
+#line 147 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
 case 47:
-#line 147 "parse.y"
-	{ yyval = yystack.l_mark[-1]; }
-break;
-case 48:
 #line 148 "parse.y"
 	{ yyval = yystack.l_mark[-1]; }
 break;
+case 48:
+#line 149 "parse.y"
+	{ yyval = yystack.l_mark[-1]; }
+break;
 case 49:
-#line 151 "parse.y"
+#line 152 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
 case 50:
-#line 152 "parse.y"
+#line 153 "parse.y"
 	{ yyval = yystack.l_mark[-2]; yystack.l_mark[-2]->r=yystack.l_mark[0]; }
 break;
 case 56:
-#line 180 "parse.y"
+#line 181 "parse.y"
 	{ yyval = newnode(add, "+"  ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 57:
-#line 181 "parse.y"
+#line 182 "parse.y"
 	{ yyval = newnode(sub, "-"  ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 58:
-#line 182 "parse.y"
+#line 183 "parse.y"
 	{ yyval = newnode(mul, "*"  ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 59:
-#line 183 "parse.y"
+#line 184 "parse.y"
 	{ yyval = newnode(dvd, "/"  ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 60:
-#line 184 "parse.y"
+#line 185 "parse.y"
 	{ yyval = newnode(pow, "^"  ,yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 61:
-#line 185 "parse.y"
+#line 186 "parse.y"
 	{ yyval = newnode(neg, "-"  , 0,yystack.l_mark[0]); }
 break;
 case 62:
-#line 186 "parse.y"
+#line 187 "parse.y"
 	{ yyval = yystack.l_mark[-1]; }
 break;
 case 63:
-#line 187 "parse.y"
-	{ yyval = yystack.l_mark[0]; }
-break;
-case 64:
 #line 188 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
-case 65:
+case 64:
 #line 189 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
-case 66:
+case 65:
 #line 190 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
-case 67:
+case 66:
 #line 191 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
-case 68:
+case 67:
 #line 192 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
+case 68:
+#line 193 "parse.y"
+	{ yyval = yystack.l_mark[0]; }
+break;
 case 69:
-#line 205 "parse.y"
+#line 206 "parse.y"
 	{ yyval = yystack.l_mark[0]; }
 break;
 case 70:
-#line 206 "parse.y"
+#line 207 "parse.y"
 	{ yyval = yystack.l_mark[-3]; yystack.l_mark[-3]->r=newnode(lst,"lst",0,yystack.l_mark[-1]); }
 break;
 case 71:
-#line 207 "parse.y"
+#line 208 "parse.y"
 	{ yyval = newnode(dom,"#",yystack.l_mark[-2],yystack.l_mark[0]); }
 break;
 case 72:
-#line 208 "parse.y"
+#line 209 "parse.y"
 	{ yyval = newnode(dom,"#",yystack.l_mark[-5],yystack.l_mark[0]); yystack.l_mark[-5]->r=newnode(lst,"lst",0,yystack.l_mark[-3]); }
 break;
 case 73:
-#line 222 "parse.y"
+#line 223 "parse.y"
 	{ yyval = newnode(log,"log", 0,yystack.l_mark[-1]); }
 break;
 case 74:
-#line 223 "parse.y"
+#line 224 "parse.y"
 	{ yyval = newnode(exp,"exp", 0,yystack.l_mark[-1]); }
 break;
 case 75:
-#line 226 "parse.y"
-	{ yyval = newnode(lag,"lag", 0,yystack.l_mark[-1]); }
-break;
-case 76:
 #line 227 "parse.y"
 	{ yyval = newnode(lag,"lag", 0,yystack.l_mark[-1]); }
 break;
-case 77:
-#line 230 "parse.y"
-	{ yyval = newnode(led,"lead",0,yystack.l_mark[-1]); }
+case 76:
+#line 228 "parse.y"
+	{ yyval = newnode(lag,"lag", 0,yystack.l_mark[-1]); }
 break;
-case 78:
+case 77:
 #line 231 "parse.y"
 	{ yyval = newnode(led,"lead",0,yystack.l_mark[-1]); }
 break;
-case 79:
+case 78:
 #line 232 "parse.y"
 	{ yyval = newnode(led,"lead",0,yystack.l_mark[-1]); }
 break;
-case 80:
+case 79:
 #line 233 "parse.y"
 	{ yyval = newnode(led,"lead",0,yystack.l_mark[-1]); }
 break;
+case 80:
+#line 234 "parse.y"
+	{ yyval = newnode(led,"lead",0,yystack.l_mark[-1]); }
+break;
 case 81:
-#line 236 "parse.y"
+#line 237 "parse.y"
 	{ yyval = newnode(sum,"sum"  ,yystack.l_mark[-3],yystack.l_mark[-1]); }
 break;
 case 82:
-#line 237 "parse.y"
+#line 238 "parse.y"
 	{ yyval = newnode(prd,"prod" ,yystack.l_mark[-3],yystack.l_mark[-1]); }
 break;
 #line 917 "parse.c"
