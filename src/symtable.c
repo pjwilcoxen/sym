@@ -135,8 +135,10 @@ void *lookup(char *name)
 {
    Symbol *cur;
 
-   if( !st_init )
-      FAULT("Symbol table not built before lookup");
+   if( !st_init ) {
+      initsymbol();
+      return 0;
+   }
 
    if( name==0 )
       FAULT("Null string passed to lookup");

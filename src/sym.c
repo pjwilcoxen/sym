@@ -42,13 +42,60 @@ int mergeonly=0;
 char *usage   = "sym [options] <language> <symfile> <codefile>";
 char *options = "-version -d -dd -doc -first -last -syntax -merge_only";
 
-char *doc = "\
-Translates models from algebraic form into several programming languages.\n\
-For a summary of the input language, use the -syntax option.  For detailed\n\
-information about the versions of the main program and the individual\n\
-language support modules, use the -version option.\n\
-";
+char *doc1 = "\
+Translates models from algebraic form into one of several programming\n\
+languages.";
 
+char *doc2 = "\
+## Details:\n\
+\n\
+### Argument language\n\
+Indicates the target output language and must be one of the alternatives\n\
+listed under the Languages heading. Required unless the -merge_only option\n\
+is used.\n\
+\n\
+### Argument symfile\n\
+Indicates the input model to be translated. Required.\n\
+\n\
+### Argument codefile\n\
+The name that should be used for the resulting target-language file. Some\n\
+target languages will involve multiple files that will be based on this\n\
+name. Required.\n\
+\n\
+### Option -d\n\
+Turn on the most commonly used debugging messages.\n\
+\n\
+### Option -dd\n\
+Turn on all debugging messages.\n\
+\n\
+### Option -doc\n\
+Print this message.\n\
+\n\
+### Option -first\n\
+Build a single-year model using only the first year.\n\
+\n\
+### Option -last\n\
+Build a single-year model using only the last year.\n\
+\n\
+### Option -merge_only\n\
+Combine all included modules and return the resulting file\n\
+without generating any target-language code.\n\
+\n\
+### Option -syntax\n\
+Print a short summary of the input syntax.\n\
+\n\
+### Option -version\n\
+Print detailed information about the versions of the main\n\
+program and the individual language support modules.\n\
+\n\
+### Language -debug\n\
+Produce a text file for debugging.\n\
+\n\
+### Language -html\n\
+Produce an HTML file that can be used for documentation.\n\
+\n\
+### Language -tablo\n\
+GEMPACK's TABLO language.";
 
 void build_langinfo(void);
 List *knownlangs(void);
@@ -111,8 +158,8 @@ char *argv[];
       h1 = do_doc ? "# " : "" ;
       h2 = do_doc ? "## " : "" ;
       if( do_doc ) {
-         printf( "%sSym Usage\n",h1 );
-         printf( "%s\n", doc );
+         printf( "%sSym Usage\n\n",h1 );
+         printf( "%s\n", doc1 );
       }
       printf( "\n%sUsage:\n    %s\n\n", h2, usage );
       printf( "%sOptions:\n    %s\n\n", h2, options );
@@ -120,8 +167,10 @@ char *argv[];
       for( thislang=known->first ; thislang ; thislang=thislang->next )
          printf("-%s ",thislang->str);
       printf( "\n\n");
-      if( do_doc )
+      if( do_doc ) {
+         printf( "%s\n\n", doc2 );
          printf( "Sym %s\n",verstr );
+      }
       if( do_usage )
          printf( "See also:\n    sym -doc and sym -syntax\n" );
       exit(0);
