@@ -161,6 +161,9 @@ static void load_file(char *filename)
          continue;
          }
       
+      if( strncasecmp(ibuf,"#",1)==0 ) 
+         fatal_error("Unexpected # at start of line: %s",ibuf);
+
       new_SourceLine(filename,linenum,ibuf);
       }
 
