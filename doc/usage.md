@@ -1,9 +1,7 @@
 # Sym Usage
-Translates models from algebraic form into several programming languages.
-For a summary of the input language, use the -syntax option.  For detailed
-information about the versions of the main program and the individual
-language support modules, use the -version option.
 
+Translates models from algebraic form into one of several programming
+languages.
 
 ## Usage:
     sym [options] <language> <symfile> <codefile>
@@ -14,4 +12,54 @@ language support modules, use the -version option.
 ## Languages:
     -debug -html -msgproc -oxgs -oxgst -oxnewton -tablo -troll 
 
-Sym v2.0 build 644 (2018/06/20)
+## Details:
+
+### Argument language
+Indicates the target output language and must be one of the alternatives
+listed under the Languages heading. Required unless the -merge_only option
+is used.
+
+### Argument symfile
+Indicates the input model to be translated. Required.
+
+### Argument codefile
+The name that should be used for the resulting target-language file. Some
+target languages will involve multiple files that will be based on this
+name. Required.
+
+### Option -d
+Turn on the most commonly used debugging messages.
+
+### Option -dd
+Turn on all debugging messages.
+
+### Option -doc
+Print this message.
+
+### Option -first
+Build a single-year model using only the first year.
+
+### Option -last
+Build a single-year model using only the last year.
+
+### Option -merge_only
+Combine all included modules and return the resulting file
+without generating any target-language code.
+
+### Option -syntax
+Print a short summary of the input syntax.
+
+### Option -version
+Print detailed information about the versions of the main
+program and the individual language support modules.
+
+### Language -debug
+Produce a text file for debugging.
+
+### Language -html
+Produce an HTML file that can be used for documentation.
+
+### Language -tablo
+GEMPACK's TABLO language.
+
+Sym v2.0 build 653 (2018/07/25)
