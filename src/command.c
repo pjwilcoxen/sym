@@ -20,11 +20,10 @@
  *  may begin with / and may touch.
  *--------------------------------------------------------------------*/
 
-#if defined(VMS) || defined(__TURBOC__) || defined(__WATCOMC__)
+#ifndef DOS
 #define SLASH_OK
 #define index(a,b) strchr(a,b)
-#endif
-#ifdef DOS
+#else
 #define SLASH_OK
 extern char *index();
 #endif

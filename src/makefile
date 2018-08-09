@@ -1,5 +1,7 @@
-TAR=watcom
+#TAR=watcom
 #TAR=gcc
+#TAR=mingw_32
+TAR=mingw_64
 
 #  To set a default target, add a line with TAR=target to 
 #  a file called "makefile-tar".  Only try to include the 
@@ -7,12 +9,21 @@ TAR=watcom
 
 -include makefile-tar
 
+OBJ  = o
+EXE  = sym.exe
+EOPT = -o $(EXE)
+OPT  = -g
+
 ifeq ($(TAR),gcc)
-   CC   = gcc
-   OBJ  = o
-   EXE  = sym.exe
-   EOPT = -o $(EXE)
-   OPT  = -g
+   CC = gcc
+endif
+
+ifeq ($(TAR),mingw_64)
+   CC = x86_64-w64-mingw32-gcc
+endif
+
+ifeq ($(TAR),mingw_32)
+   CC = i686-w64-mingw32-gcc
 endif
 
 ifeq ($(TAR),watcom)

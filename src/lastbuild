@@ -24,7 +24,7 @@ print OUT <<EOF ;
 #ifndef BUILD_H
 #define BUILD_H
 
-static char *verstr = "$git build $n ($str)" ;
+static char *verstr = "build $n ($str)" ;
 
 #endif /* BUILD_H */
 EOF

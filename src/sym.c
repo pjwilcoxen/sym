@@ -134,7 +134,7 @@ char *argv[];
 
    if( isoption("version",1) )
       {
-      printf( "Sym %s\n",verstr);
+      printf( "symbol %s\n",verstr);
       printf( "--- compiler: %s\n",builtby());
       printf( "--- base code: v%s\n", rev );
       known = langvers();
@@ -339,6 +339,13 @@ static char *builtby()
 
 #if defined(__linux__) && defined(__GNUC__)
    sprintf(buf,"linux gcc %d.%d",__GNUC__,__GNUC_MINOR__);
+#endif
+
+#if defined(__MINGW32__)
+   sprintf(buf,"mingw32 gcc 32-bit");
+#endif
+#if defined(__MINGW64__)
+   sprintf(buf,"mingw32 gcc 64-bit");
 #endif
 
 #ifdef __WATCOMC__

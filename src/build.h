@@ -1,6 +1,6 @@
 #ifndef BUILD_H
 #define BUILD_H
 
-static char *verstr = "v2.0 build 655 (2018/07/25)" ;
+static char *verstr = "build 662 (2018/08/09)" ;
 
 #endif /* BUILD_H */
