@@ -62,4 +62,4 @@ Produce an HTML file that can be used for documentation.
 ### Language -tablo
 GEMPACK's TABLO language.
 
-Sym build 662 (2018/08/09)
+Sym build 675 (2018/08/10)

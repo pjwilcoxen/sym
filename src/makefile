@@ -1,7 +1,7 @@
 #TAR=watcom
-#TAR=gcc
+TAR=gcc
 #TAR=mingw_32
-TAR=mingw_64
+#TAR=mingw_64
 
 #  To set a default target, add a line with TAR=target to 
 #  a file called "makefile-tar".  Only try to include the 

@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define SLBUFSIZE 8096
+
 static int nlists=0;
 
 
@@ -281,15 +283,20 @@ List *list;
 char *slprint(list)
 List *list;
 {
-   static char obuf[1024];
+   static char obuf[SLBUFSIZE];
    Item *cur;
    int n=0;
+   int newlen;
    
    validate( list, LISTOBJ, "slprint" );
 
    strcpy(obuf,"");
 
    for( cur=list->first ; cur ; cur=cur->next )
+      {
+      newlen = strlen(obuf)+strlen(cur->str)+2;
+      if( newlen > SLBUFSIZE ) 
+         fatal_error("%s","buffer size exceeded in slprint");
       if( 0 == n++ )
          strcpy(obuf,cur->str);
       else
@@ -297,6 +304,7 @@ List *list;
          strcat(obuf,",");
          strcat(obuf,cur->str);
          }
+      }
 
    return obuf;
 }
