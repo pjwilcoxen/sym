@@ -1,6 +1,6 @@
 #TAR=watcom
-TAR=gcc
-#TAR=mingw_32
+#TAR=gcc
+TAR=mingw_32
 #TAR=mingw_64
 
 #  To set a default target, add a line with TAR=target to 
