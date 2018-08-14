@@ -2,11 +2,17 @@
  *  tablo.c
  *  Dec 04 (PJW)
  *   
- *  Backend routine generating a tablo file.
- *  
- *  Variable Attributes Used:
- *  
- *     exo   = exogenous
+ *  Backend routine generating a tablo file. One attribute is
+ *  allowed in variable and parameter declarations. If present,
+ *  it is used as the name of an HAR header and should have the
+ *  form: c### where c is one of the letters below and is used 
+ *  to  infer the TABLO logical name:
+ *
+ *     B = base
+ *     K = kalman
+ *     M = make
+ *     N = endog
+ *     X = exog
  *
  *  $Id: tablo.c 57 2018-06-16 19:50:13Z wilcoxen $
  *--------------------------------------------------------------------*/
@@ -51,7 +57,6 @@ Array *tabsets=0;
 static int Tablo_eqn=0;
 static int Tablo_var=0;
 static int Tablo_par=0;
-
 
 //----------------------------------------------------------------------//
 //  tabloset
@@ -198,6 +203,8 @@ static void Tablo_writedecs()
    List *val;
    List *sofar;
    int  hdr=0;
+   List *atts;
+   char *filename;
 
    //
    //  make unique set index variables
@@ -296,9 +303,14 @@ static void Tablo_writedecs()
       val  = symvalue(cur);
       qual = tabloqualifier(val);
       ref  = tablovar(name,val,0);
-      
-      sprintf(buf,"%3.3d",hdr++);
-      stmt = concat(7,"read ",qual,"\n   ",ref," from file param header \"H",buf,"\" ;");
+
+      atts = symattrib(cur);
+      if( atts->n == 1 )
+         strncpy(buf,atts->first->str,10);
+      else
+         sprintf(buf,"H%3.3d",hdr++);
+
+      stmt = concat(7,"read ",qual,"\n   ",ref," from file param header \"",buf,"\" ;");
       wrap_write(stmt,1,0);
       free(stmt);
       
@@ -335,7 +347,10 @@ static void Tablo_writedecs()
    //  write out some placeholder read statements
    //
 
-   fprintf(code,"\nfile base ;\n\n");
+   fprintf(code,"\nfile base ;\n");
+   fprintf(code,"file exogen ;\n");
+   fprintf(code,"file make ;\n");
+   fprintf(code,"file kalman ;\n\n");
 
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
       {
@@ -344,8 +359,23 @@ static void Tablo_writedecs()
       qual = tabloqualifier(val);
       ref  = tablovar(name,val,0);
       
-      sprintf(buf,"%3.3d",hdr++);
-      stmt = concat(7,"read ",qual,"\n   ",ref," from file base header \"H",buf,"\" ;");
+      filename = "base";
+      atts = symattrib(cur);
+      if( atts->n == 1 ) {
+         strncpy(buf,atts->first->str,10);
+         switch( *buf ) {
+            case 'B': filename = "base";   break;
+            case 'K': filename = "kalman"; break;
+            case 'M': filename = "make";   break;
+            case 'N': filename = "endog";  break;
+            case 'X': filename = "exog";   break;
+            default:  filename = "base";   break;
+         }
+      }
+      else
+         sprintf(buf,"H%3.3d",hdr++);
+
+      stmt = concat(9,"read ",qual,"\n   ",ref," from file ",filename," header \"",buf,"\" ;");
       wrap_write(stmt,1,0);
       free(stmt);
       
