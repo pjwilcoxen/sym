@@ -1,27 +1,23 @@
 /*--------------------------------------------------------------------*
  *  oxnewton.c
  *  Dec 04 (PJW)
- *   
- *  Backend routine generating an Ox procedure for use with 
- *  Newton's method.
+ *--------------------------------------------------------------------*
+.. ### oxnewton
+..
+.. Support an Ox implementation of Newton's Method for simple 
+.. models.
+ *
+ * + Variable attributes used: end = endogenous, exo = exogenous,
+ *   guess = endogenous and part of the X vector in F(X)=0, cos = 
+ *   costate variable but treated as a synonym for guess, sta = 
+ *   state variable but treated as a synonym for guess.
+ *
+ * + Equation attributes used: miss = include in the F vector in 
+ *   F(X)=0
  *  
- *  Variable Attributes Used:
- *  
- *     end   = endogenous
- *     exo   = exogenous
- *     guess = endogenous, include in the X vector in F(X)=0
- *     cos   = treated as 'guess'
- *     sta   = treated as 'guess' (for use with ss programs)
- *     
- *  Equation Attributes Used:
+ * + Leads and lags are not allowed.
  *
- *     miss  = include in the F vector in F(X)=0
- *     
- *  Variable Context Restrictions Imposed:
- *
- *     lead() and lag() are not allowed.  The LHS must be an
- *     lvalue except for the miss equations.
- *
+ * + The left hand side of each equation must be a variable name.
  *--------------------------------------------------------------------*/
 
 #include "../cart.h"

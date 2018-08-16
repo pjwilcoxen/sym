@@ -1,14 +1,12 @@
 /*--------------------------------------------------------------------*
  *  troll.c
  *  Dec 04 (PJW)
- *   
- *  Backend routine generating a TROLL file.
- *  
- *  Variable Attributes Used:
- *  
- *     exo   = exogenous
+ *--------------------------------------------------------------------*
+.. ### troll
+..
+.. Support TROLL.
  *
- *  $Id: troll.c 57 2018-06-16 19:50:13Z wilcoxen $
+ * + Variable attributes used: exo = exogenous.
  *--------------------------------------------------------------------*/
 
 #include "../cart.h"

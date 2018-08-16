@@ -1,9 +1,19 @@
 /*--------------------------------------------------------------------*
- *  msgproc.c
- *  Jul 04 (PJW)
- *   
- *  Backend routine to support Warwick's solution algorithm under Ox.
- *  
+ * msgproc.c
+ * Jul 04 (PJW)
+ *--------------------------------------------------------------------*
+.. ### msgproc
+..
+.. Support the Ox implementation of the MSG/G-Cubed solution algorithm.
+ *
+ * + Each variable must have exactly one of the following attribute
+ *   tags indicating its type: end = endogenous, exo = exogenous,
+ *   sta = state variable, cos = costate variable.
+ *
+ * + Leads and lags are only allowed on some variable types:
+ *   lead(cos), lead(sta), lead(end), lag(end).
+ *--------------------------------------------------------------------*
+ *
  *  Each variable in the model file must be given exactly one of the 
  *  following attribute tags, where "LHS vec" and "RHS vec" show 
  *  how contemporaneous values of the variables (no lag or lead) are 
@@ -194,7 +204,6 @@ struct vartype_info vlist[] =
 //  The us_units list is used for setting the region of variables 
 //  in the vars.csv file.  It is used for variables that are normalized
 //  relative to US rather than own GDP.
-//
 
 char *units[] = 
    { "del", "pct", "gdp", "usgdp", "cent", "gwh", "gwhgdp", 
@@ -208,7 +217,6 @@ char *us_units[] =
 //
 //  If these are not present in the input file, setup_gaussname
 //  will crash.
-//
 
 char *setname_regions = "regions";
 char *setname_sectors = "sectors";

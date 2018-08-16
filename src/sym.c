@@ -82,20 +82,12 @@ Combine all included modules and return the resulting file\n\
 without generating any target-language code.\n\
 \n\
 ### Option -syntax\n\
-Print a short summary of the input syntax.\n\
+Print a short summary of the input syntax, including some\n\
+notes about rules appling to specific target languages.\n\
 \n\
 ### Option -version\n\
 Print detailed information about the versions of the main\n\
-program and the individual language support modules.\n\
-\n\
-### Language -debug\n\
-Produce a text file for debugging.\n\
-\n\
-### Language -html\n\
-Produce an HTML file that can be used for documentation.\n\
-\n\
-### Language -tablo\n\
-GEMPACK's TABLO language.";
+program and the individual language support modules.";
 
 void build_langinfo(void);
 List *knownlangs(void);
@@ -121,6 +113,7 @@ char *argv[];
    Item *thislang;
    int  do_doc;
    int  do_usage;
+   char *langdoc();
 
    lang = "debug";
 
@@ -146,6 +139,7 @@ char *argv[];
    if( isoption("syntax"  ,1) )
       {
       syntax();
+      langdoc();
       exit(0);
       }
 

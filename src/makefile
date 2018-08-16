@@ -41,7 +41,7 @@ OBJS = assoc.$(OBJ) command.$(OBJ) declare.$(OBJ) \
       lists.$(OBJ) sets.$(OBJ) eqns.$(OBJ) \
       readfile.$(OBJ) syntax.$(OBJ) error.$(OBJ) options.$(OBJ) \
       numsub.$(OBJ) refinesets.$(OBJ) cart.$(OBJ) str.$(OBJ) \
-      lang.$(OBJ) default.$(OBJ) wprint.$(OBJ)
+      lang.$(OBJ) default.$(OBJ) wprint.$(OBJ) langdoc.$(OBJ)
       
 LANGS = lang/setup.$(OBJ) lang/debug.$(OBJ) lang/msgproc.$(OBJ) \
         lang/oxnewton.$(OBJ) lang/troll.$(OBJ) lang/tablo.$(OBJ) \
@@ -72,6 +72,9 @@ all : ../doc/usage.md ../doc/syntax.md
 ../doc/usage.md : $(EXE)
 	-rm -f $@
 	$(EXE) -doc > $@
+
+langdoc.c : $(LANGS)
+	perl makelangdoc.p
 
 $(EXE) : sym.$(OBJ) $(OBJS) $(LANGS) 
 	$(CC) $(OPT) $(EOPT) sym.$(OBJ) $(OBJS) $(LANGLINK)

@@ -246,6 +246,13 @@ setfunc  : SUM   '(' NAME ',' expr ')'  { $$ = newnode(sum,"sum"  ,$3,$5); }
          | PROD  '(' NAME ',' expr ')'  { $$ = newnode(prd,"prod" ,$3,$5); }
          ;
 
+/*
+.. ## Notes on Output Targets:
+..
+.. The sections below provide additional information about the features
+.. or requirements of specific output targets.
+*/
+
 %%
 
 

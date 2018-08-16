@@ -65,6 +65,10 @@ of sym.\n\
     PROD(set,expr)\n\
     SUM(set,expr)\n\
 \n\
+## Notes on Output Targets:\n\
+\n\
+The sections below provide additional information about the features\n\
+or requirements of specific output targets.\n\
 \n"};
 printf(from_parse_y);
 }

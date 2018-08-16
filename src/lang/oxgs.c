@@ -1,26 +1,19 @@
 /*--------------------------------------------------------------------*
- *  oxgs.c
- *  Mar 06 (PJW)
- *   
- *  Backend routine generating an Ox procedure for use with 
- *  the Gauss-Seidel algorithm.
+ * oxgs.c
+ * Mar 06 (PJW)
+ *--------------------------------------------------------------------*
+.. ### oxgs
+..
+.. Support a simple Ox implementation of the Gauss-Seidel algorithm.
  *  
- *  Variable Attributes Used:
- *  
- *     end   = endogenous
- *     exo   = exogenous
- *     cos   = treated as 'guess'
- *     sta   = treated as 'guess' (for use with ss programs)
- *     
- *  Equation Attributes Used:
+ * + Variable attributes used: end = endogenous, exo = exogenous,
+ *   cos = costate variable treated as guess, sta = state variable 
+ *   treated as guess for steady states.
+ * 
+ * + Leads and lags are not allowed. 
  *
- *     none
- *     
- *  Variable Context Restrictions Imposed:
- *
- *     lead() and lag() are not allowed.  The LHS must be an
- *     lvalue.
- *
+ * + The left hand side of the equation must be an variable, not
+ *   an expression.
  *--------------------------------------------------------------------*/
 
 #include "../cart.h"

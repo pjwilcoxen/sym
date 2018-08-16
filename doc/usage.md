@@ -47,19 +47,11 @@ Combine all included modules and return the resulting file
 without generating any target-language code.
 
 ### Option -syntax
-Print a short summary of the input syntax.
+Print a short summary of the input syntax, including some
+notes about rules appling to specific target languages.
 
 ### Option -version
 Print detailed information about the versions of the main
 program and the individual language support modules.
 
-### Language -debug
-Produce a text file for debugging.
-
-### Language -html
-Produce an HTML file that can be used for documentation.
-
-### Language -tablo
-GEMPACK's TABLO language.
-
-Sym build 687 (2018/08/16)
+Sym build 705 (2018/08/16)

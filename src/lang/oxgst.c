@@ -1,28 +1,23 @@
 /*--------------------------------------------------------------------*
  *  OxGST.c
  *  Jun 08 (PJW)
- *   
- *  Backend routine generating an Ox procedure for use with 
- *  the Gauss-Seidel algorithm.  This version removes the
- *  restriction in OxGS that limits it to single periods.
+ *--------------------------------------------------------------------*
+.. ### oxgst
+..
+.. Extended version of the OxGS target that removes a restriction 
+.. in OxGS limiting it to single periods.
  *  
- *  Variable Attributes Used:
- *  
- *     end   = endogenous
- *     exo   = exogenous
- *     cos   = treated as 'guess'
- *     sta   = treated as 'guess' (for use with ss programs)
- *     
- *  Equation Attributes Used:
+ * + Variable attributes used: end = endogenous, exo = exogenous,
+ *   cos = costate variable treated as guess, sta = state variable 
+ *   treated as guess for steady states.
+ * 
+ * + Leads and lags are not allowed. 
  *
- *     none
- *     
- *  Variable Context Restrictions Imposed:
+ * + The left hand side of the equation must be an variable, not
+ *   an expression.
  *
- *     The LHS must be an lvalue.  All variables will be treated
- *     as subscripted by time even if they aren't explicitly
- *     declared that way.
- *
+ * + All variables will be treated as subscripted by time even if 
+ *   they aren't explicitly declared that way.
  *--------------------------------------------------------------------*/
 
 #include "../error.h"

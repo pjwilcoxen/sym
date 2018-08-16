@@ -1,6 +1,12 @@
 /*--------------------------------------------------------------------*
- *  debug.c
- *  Mar 04 (PJW)
+ * debug.c
+ * Mar 04 (PJW)
+ *--------------------------------------------------------------------*
+.. ### debug
+..
+.. Write out in a format useful for checking equations.
+..
+.. + Equation descriptions will be written
  *--------------------------------------------------------------------*/
 
 #include "../eqns.h"

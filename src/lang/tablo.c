@@ -1,20 +1,26 @@
 /*--------------------------------------------------------------------*
  *  tablo.c
  *  Dec 04 (PJW)
- *   
- *  Backend routine generating a tablo file. One attribute is
- *  allowed in variable and parameter declarations. If present,
- *  it is used as the name of an HAR header and should have the
- *  form: c### where c is one of the letters below and is used 
- *  to  infer the TABLO logical name:
- *
- *     B = base
- *     K = kalman
- *     M = make
- *     N = endog
- *     X = exog
- *
- *  $Id: tablo.c 57 2018-06-16 19:50:13Z wilcoxen $
+ *--------------------------------------------------------------------*
+.. ### tablo
+.. 
+.. Support GEMPACK's TABLO language.
+..
+.. + All variables are implicitly subscripted by time. However, 
+..   parameters are not.
+..
+.. + The left side of an equation may be an expression, not just a 
+..   variable name.
+..
+.. + At most one attribute is allowed in variable and parameter 
+..   declarations. If present, it is used as the name of an HAR header 
+..   and should have the form: c###. 
+..
+..  + Parameters are read from TABLO logical name 'param'. Variables
+..    are read from one of the following files depending on the value
+..    of the first letter of the header: B = 'base', K = 'kalman', 
+..    M = 'make', N = 'endog', and X = 'exog'. If the first letter does 
+..    not match one of the above 'base' will be used as the file name.
  *--------------------------------------------------------------------*/
 
 #include "../assoc.h"

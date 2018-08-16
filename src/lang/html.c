@@ -1,8 +1,12 @@
 /*--------------------------------------------------------------------*
- *  html.c
- *  Aug 05 (PJW)
- *
- *  Write a model in HTML for use as documentation.
+ * html.c
+ * Aug 05 (PJW)
+ *--------------------------------------------------------------------*
+.. ### html
+..
+.. Write out the model in HTML for use as documentation.
+..
+.. + Equation descriptions will be written
  *--------------------------------------------------------------------*/
 
 #include "../assoc.h"

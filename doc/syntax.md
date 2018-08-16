@@ -61,4 +61,63 @@ of sym.
     PROD(set,expr)
     SUM(set,expr)
 
+## Notes on Output Targets:
+
+The sections below provide additional information about the features
+or requirements of specific output targets.
+
+### debug
+
+Write out in a format useful for checking equations.
+
++ Equation descriptions will be written
+
+### html
+
+Write out the model in HTML for use as documentation.
+
++ Equation descriptions will be written
+
+### msgproc
+
+Support the Ox implementation of the MSG/G-Cubed solution algorithm.
+
+### oxgs
+
+Support a simple Ox implementation of the Gauss-Seidel algorithm.
+
+### oxgst
+
+Extended version of the OxGS target that removes a restriction
+in OxGS limiting it to single periods.
+
+### oxnewton
+
+Support an Ox implementation of Newton's Method for simple
+models.
+
+### tablo
+
+Support GEMPACK's TABLO language.
+
++ All variables are implicitly subscripted by time. However,
+  parameters are not.
+
++ The left side of an equation may be an expression, not just a
+  variable name.
+
++ At most one attribute is allowed in variable and parameter
+  declarations. If present, it is used as the name of an HAR header
+  and should have the form: c###.
+
+ + Parameters are read from TABLO logical name 'param'. Variables
+   are read from one of the following files depending on the value
+   of the first letter of the header: B = 'base', K = 'kalman',
+   M = 'make', N = 'endog', and X = 'exog'. If the first letter does
+   not match one of the above 'base' will be used as the file name.
+
+### troll
+
+Support TROLL.
+
 
