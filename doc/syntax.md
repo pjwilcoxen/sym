@@ -29,7 +29,7 @@ of sym.
 
 ## Equations:
 
-    [EQUATION name|/name/] [sets:] expr = expr [attributes];
+    [EQUATION name|/name/] [sets:] expr = expr ['description'] [attributes];
 
 ## Expressions:
 

@@ -89,6 +89,7 @@ void DB_begin_block(void *eq)
 {
    List *esets,*eqnsets();
    int nblk,nstart,nscalar,nend;
+   char *label;
 
    nblk    = DB_block++;
    nstart  = DB_scalar;
@@ -98,8 +99,12 @@ void DB_begin_block(void *eq)
    DB_scalar = nend+1;
 
    esets = eqnsets(eq);
-   
-   fprintf(code,"// Equation block %d\n",nblk);
+   label = eqnlabel(eq);
+
+   if( label )
+      fprintf(code,"// Equation block %d: %s\n",nblk,label);
+   else
+      fprintf(code,"// Equation block %d\n",nblk);
 
    if( esets->n )
       fprintf(code,"//    Defined over sets (%s)\n",slprint(esets) );

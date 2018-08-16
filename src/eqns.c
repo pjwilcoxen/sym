@@ -32,6 +32,7 @@ struct equation
    int obj;
    int n;
    char *name;
+   char *label;
    Node *qual;
    Node *eq;
    Node *lhs;
@@ -63,8 +64,8 @@ List *timesets=0;
 /*-------------------------------------------------------------------*
  *  neweqn
  *-------------------------------------------------------------------*/
-void neweqn(qual,lhs,rhs,attr,name)
-Node *qual,*lhs,*rhs,*attr,*name;
+void neweqn(qual,lhs,rhs,attr,name,label)
+Node *qual,*lhs,*rhs,*attr,*name,*label;
 {
    Equation *eq,*new;
    void resetlastnode();
@@ -72,6 +73,7 @@ Node *qual,*lhs,*rhs,*attr,*name;
    new = (Equation *) xmalloc( sizeof(Equation) );
    new->obj    = EQSIG;
    new->name   = 0;
+   new->label  = 0;
    new->qual   = qual;
    new->eq     = newnode(equ,"=",lhs,rhs);
    new->lhs    = lhs;
@@ -101,6 +103,12 @@ Node *qual,*lhs,*rhs,*attr,*name;
       }
    else
       first = new ; 
+
+   if( label )
+      {
+      validate( label, NODEOBJ, "neweqn" );
+      new->label = strdup( label->str );
+      }
 
    if( name )
       {
@@ -168,8 +176,18 @@ Node *getrhs(void *vcur)
  *-------------------------------------------------------------------*/
 char *eqname(void *vcur)
 {
-   validate( vcur, EQSIG, "eqnsets" );
+   validate( vcur, EQSIG, "eqname" );
    return ((Equation *) vcur)->name;
+}
+
+
+/*-------------------------------------------------------------------*
+ *  eqnlabel
+ *-------------------------------------------------------------------*/
+char *eqnlabel(void *vcur)
+{
+   validate( vcur, EQSIG, "eqnlabel" );
+   return ((Equation *) vcur)->label;
 }
 
 

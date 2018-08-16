@@ -398,6 +398,7 @@ void HTML_begin_block(void *eq)
    char *qual;
    List *eqnsets();
    int nblk,nstart,nscalar,nend;
+   char *label;
 
    if( HTML_block == 1 )
       HTML_writedecs();
@@ -409,7 +410,11 @@ void HTML_begin_block(void *eq)
    
    HTML_scalar = nend+1;
 
-   fprintf(code,"<div class=\"eblock\">\nEquation %d<br>\n",nblk);
+   label = eqnlabel(eq);
+   if( label )
+      fprintf(code,"<div class=\"eblock\">\nEquation %d: %s<br>\n",nblk,label);
+   else
+      fprintf(code,"<div class=\"eblock\">\nEquation %d<br>\n",nblk);
 
    switch( nscalar )
       {

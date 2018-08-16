@@ -10,6 +10,7 @@
 #include "nodes.h"
 
 Node* getnode(void*);
+char* eqnlabel(void*);
 int   eqncount(void*);
 int   hasundec(void*);
 int   iseqnattr(void*,char*);
@@ -18,7 +19,7 @@ int   istimeok(void*);
 int   num_eqns(void);
 void  build_context(void);
 void  check_equations();
-void  neweqn(Node*,Node*,Node*,Node*,Node*);
+void  neweqn(Node*,Node*,Node*,Node*,Node*,Node*);
 void* firsteqn(void);
 void* nexteqn(void*);
 
