@@ -21,6 +21,6 @@ including a list of the back-end solution packages that are currently
 supported. See [doc/syntax](doc/syntax.md) for a brief overview of Sym's 
 syntax.
 
-Sym is used in the implementation of G-Cubed, a multi-region general 
-equilibrium model of the world economy, and [OpenIGEM](https://github.com/pjwilcoxen/openigem), 
+Sym is used to implement G-Cubed, a multi-region general equilibrium model 
+of the world economy, and [OpenIGEM](https://github.com/pjwilcoxen/openigem), 
 an open-source econometric general equilibrium model of the US economy.
