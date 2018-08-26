@@ -63,13 +63,13 @@ lang/%.o : lang/%.c
    
 #	$(CC) $(OPT) -c $< -o $*.$(OBJ)
 
-all : ../doc/usage.md ../doc/syntax.md
+all : ../docs/usage.md ../docs/syntax.md
 
-../doc/syntax.md : $(EXE)
+../docs/syntax.md : $(EXE)
 	-rm -f $@
 	$(EXE) -syntax > $@
 
-../doc/usage.md : $(EXE)
+../docs/usage.md : $(EXE)
 	-rm -f $@
 	$(EXE) -doc > $@
 
