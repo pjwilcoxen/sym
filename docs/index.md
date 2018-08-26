@@ -1,4 +1,4 @@
-# About
+# Abstract
 
 Sym is a set-driven matrix language for expressing large-scale general 
 equilibrium models in algebraic form. It is designed to be nearly as 
