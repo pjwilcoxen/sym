@@ -21,4 +21,4 @@ of the world economy, and [OpenIGEM](https://pjwilcoxen.github.io/openigem/),
 an open-source econometric general equilibrium model of the US economy.
 
 For more information and documentation, please see 
-[Sym's GitHub Pages site](https://pjwilcoxen.github.io/sym/).
+the [sym documentation site](https://pjwilcoxen.github.io/sym/).
