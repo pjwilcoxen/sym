@@ -16,11 +16,9 @@ Sym front end, with concise notation and extensive conformability rules,
 for other software. Support for back-end solution packages is modular 
 and straightforward to extend to other others.
 
-See [doc/usage](doc/usage.md) for a short usage description for the program, 
-including a list of the back-end solution packages that are currently 
-supported. See [doc/syntax](doc/syntax.md) for a brief overview of Sym's 
-syntax.
-
 Sym is used to implement G-Cubed, a multi-region general equilibrium model 
 of the world economy, and [OpenIGEM](https://github.com/pjwilcoxen/openigem), 
 an open-source econometric general equilibrium model of the US economy.
+
+For more information and documentation, please see 
+[Sym's GitHub Pages site](https://pjwilcoxen.github.io/sym/index.html).
