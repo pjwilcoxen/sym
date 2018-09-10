@@ -15,8 +15,17 @@ an open-source econometric general equilibrium model of the US economy.
 
 # Documentation
 
-See [usage](usage.md) for a short usage description for the program, 
-including a list of the back-end solution packages that are currently 
-supported. See [syntax](syntax.md) for a brief overview of Sym's 
-syntax.
++ [Overview](sym-overview.pdf): an overview of Sym and a short discussion of 
+its design principles.
 
++ [Notation](comparing-notation.pdf): a short example comparing Sym's 
+notation with that of Fortran and Gempack's TABLO language.
+
++ [G-Cubed](sym-gcubed-example.pdf): an annotated example of the use
+of Sym in implementing the G-Cubed model.
+
++ [Usage](usage.md): a short usage description for the program, 
+including a list of the back-end solution packages that are currently 
+supported. 
+
++ [Syntax](syntax.md): a brief overview of Sym's syntax.
