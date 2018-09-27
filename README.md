@@ -22,3 +22,5 @@ an open-source econometric general equilibrium model of the US economy.
 
 For more information and documentation, please see 
 the [sym documentation site](https://pjwilcoxen.github.io/sym/).
+To download a Windows binary of sym, please see the 
+[releases page](https://github.com/pjwilcoxen/sym/releases).
