@@ -7,6 +7,9 @@ for( $n="0" ; $n=="0" ; ) {
    }
 close( INP );
 
+$git_tag = `git tag | tail -1`;
+chop($git_tag);
+
 $n++;
 
 open( OUT, "> build.h" ) || die( "Could not write build.h: " );
@@ -25,6 +28,7 @@ print OUT <<EOF ;
 #define BUILD_H
 
 static char *verstr = "build $n ($str)" ;
+static char *gitver = "$git_tag" ;
 
 #endif /* BUILD_H */
 EOF

@@ -128,6 +128,7 @@ char *argv[];
    if( isoption("version",1) )
       {
       printf( "symbol %s\n",verstr);
+      printf( "--- repository version: %s\n",gitver); 
       printf( "--- compiler: %s\n",builtby());
       printf( "--- base code: v%s\n", rev );
       known = langvers();
@@ -163,7 +164,7 @@ char *argv[];
       printf( "\n\n");
       if( do_doc ) {
          printf( "%s\n\n", doc2 );
-         printf( "Sym %s\n",verstr );
+         printf( "Sym %s %s\n",gitver,verstr );
       }
       if( do_usage )
          printf( "See also:\n    sym -doc and sym -syntax\n" );
