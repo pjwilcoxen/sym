@@ -13,7 +13,7 @@ an open-source econometric general equilibrium model of the US economy.
 
 # Source Code and Executables
 + Sym's source code is available on GitHub via the link above or [here](https://github.com/pjwilcoxen/sym/).
-+ Windows executables are available from the [releases page](https://https://github.com/pjwilcoxen/sym/releases/).
++ Windows executables are available from the [releases page](https://github.com/pjwilcoxen/sym/releases/).
 + Sym also compiles without modification under various versions of Linux.
 
 # Documentation
