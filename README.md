@@ -17,7 +17,7 @@ for other software. Support for back-end solution packages is modular
 and straightforward to extend to other others.
 
 Sym is used to implement G-Cubed, a multi-region general equilibrium model 
-of the world economy, and [OpenIGEM](https://pjwilcoxen.github.io/openigem/), 
+of the world economy, and [OpenIGEM](https://openigem.github.io/), 
 an open-source econometric general equilibrium model of the US economy.
 
 For more information and documentation, please see 
