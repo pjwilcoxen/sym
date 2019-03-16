@@ -55,6 +55,7 @@ typedef struct source_line
 SourceLine  head ;
 SourceLine *tail ;
 SourceLine *curr ;
+SourceLine *prev ;
 
 //
 //  new_SourceLine
@@ -195,7 +196,7 @@ static void read_files()
       load_lex_buf(buf);
       if( DBG )
          {
-         printf( "parsing statement %d (%s,%d):\n",ngood,curr->file,curr->num );
+         printf( "parsing statement %d (%s,%d):\n",ngood,prev->file,prev->num );
          printf( "%s\n\n",buf );
          }
       if( yyparse() )
@@ -204,7 +205,7 @@ static void read_files()
          last = getlastnode();
          lbuf = getlexbuf();
 
-         printf("\nA statement in file %s at line %d is invalid:\n\n",curr->file,curr->num);
+         printf("\nA statement in file %s at line %d is invalid:\n\n",prev->file,prev->num);
 
          if( lbuf )printf("%s\n",lbuf);
          if( tokn )
@@ -254,6 +255,7 @@ int n;
       *ibuf = '\0';
       strcpy(ibuf,curr->line);
       if( DBG )printf("read %s line %d\n",curr->file,curr->num);
+      prev = curr;
       curr = curr->next;
 
       c = strstr(ibuf,"//");
