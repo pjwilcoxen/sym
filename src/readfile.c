@@ -181,10 +181,10 @@ static void load_file(char *filename)
 static void read_files()
 {
    char buf[MAXSTMT+1];
-   int  ngood=0,fatal=0;
-   char *last,*getlastnode();
+   int  ngood=0,fatal=0,netopen;
    char *tokn,*getlasttoken();
    char *lbuf,*getlexbuf();
+   char *c;
 
    sbuf[0] = 0;
 
@@ -202,7 +202,6 @@ static void read_files()
       if( yyparse() )
          {
          tokn = getlasttoken();
-         last = getlastnode();
          lbuf = getlexbuf();
 
          printf("\nA statement in file %s at line %d is invalid:\n\n",prev->file,prev->num);
@@ -210,9 +209,20 @@ static void read_files()
          if( lbuf )printf("%s\n",lbuf);
          if( tokn )
             printf("\nThe error occurs near:\n   %s\n",tokn);
-         if( last ) 
-            printf("\nThe last part of the statement read without error was:\n\n   %s\n",last);
- 
+
+         // check for unbalanced parentheses in the whole statement
+
+         netopen = 0;
+         for( c=buf ; *c ; c++ )
+            {
+            netopen += (*c == '(');
+            netopen -= (*c == ')');
+            }
+         if( netopen > 0 )
+            printf("\nUnbalanced parentheses: %d open without close.\n",netopen);
+         if( netopen < 0 )
+            printf("\nUnbalanced parentheses: %d close without open.\n",-netopen);
+
          fatal++;
          }
       }
