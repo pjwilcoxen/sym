@@ -110,20 +110,33 @@ static struct setinfo *newset(char *name, List *ele)
    
    
 /*-------------------------------------------------------------------*
+ *  lookupset
+ *
+ *  Look up a set in the list by name and return the set or null.
+ *-------------------------------------------------------------------*/
+static struct setinfo *lookupset(char *name)
+{
+   struct setinfo *cur;
+   for( cur=sethead ; cur ; cur=cur->next )
+      if( isequal(name,cur->name) )
+         return cur;
+   return 0;
+}
+
+
+/*-------------------------------------------------------------------*
  *  findset
  *
- *  Look up a set in the list by name.
+ *  Look up a set in the list by name. Abort if the set doesn't 
+ *  exist.
  *-------------------------------------------------------------------*/
 static struct setinfo *findset(char *name)
 {
    struct setinfo *cur;
-
-   for( cur=sethead ; cur ; cur=cur->next )
-      if( isequal(name,cur->name) )
-         return cur;
-
-   fatal_error("Set '%s' does not exist",name);
-   return 0;
+   cur = lookupset(name);
+   if(cur==0)
+      fatal_error("Set '%s' does not exist",name);
+   return cur;
 }
 
 
@@ -494,7 +507,9 @@ int issubset(char *small, char *large)
    Item *sm_ele;
    int result;
 
-   sm = findset(small);
+   sm = lookupset(small);
+   if(sm==0)
+      fatal_error("Element is a member of multiple master sets: %s\n",small);
 
    if( sm->aliasof && isequal(sm->aliasof,large) )
       return 1;
