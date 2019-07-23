@@ -211,6 +211,10 @@ static void Tablo_writedecs()
    int  hdr=0;
    List *atts;
    char *filename;
+   List *files;
+   Item *itm;
+
+   files = newlist();
 
    //
    //  make unique set index variables
@@ -329,9 +333,10 @@ static void Tablo_writedecs()
    if( n )fprintf(code,"\n");
 
    //
-   //  write out variable statements
+   //  write out variable statements; keep track of which files
+   //  we'll need along the way
    // 
-    
+   
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
       {
       name = symname(cur);
@@ -342,6 +347,18 @@ static void Tablo_writedecs()
       stmt = concat(4,"variable ",qual,ref," ;");
       wrap_write(stmt,1,0);
       free(stmt);
+
+      atts = symattrib(cur);
+      if( atts->n == 1 ) {
+         switch( *atts->first->str ) {
+            case 'B': addlist(files,"base"  ); break;
+            case 'K': addlist(files,"kalman"); break;
+            case 'M': addlist(files,"make"  ); break;
+            case 'N': addlist(files,"endog" ); break;
+            case 'X': addlist(files,"exog"  ); break;
+            default:  addlist(files,"other" ); break;
+         }
+      }
       
       free(name);
       freelist(val);
@@ -350,13 +367,20 @@ static void Tablo_writedecs()
       }
 
    //
-   //  write out some placeholder read statements
+   //  write out declarations of logical file names
    //
 
-   fprintf(code,"\nfile base ;\n");
-   fprintf(code,"file exogen ;\n");
-   fprintf(code,"file make ;\n");
-   fprintf(code,"file kalman ;\n\n");
+   fprintf(code,"\n");
+   if( files->n ) 
+      {
+      for( itm=files->first ; itm ; itm=itm->next )
+         fprintf(code,"file %s ;\n",itm->str);
+      fprintf(code,"\n");
+      }
+
+   //
+   //  write out read statements
+   //
 
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
       {
@@ -370,12 +394,12 @@ static void Tablo_writedecs()
       if( atts->n == 1 ) {
          strncpy(buf,atts->first->str,10);
          switch( *buf ) {
-            case 'B': filename = "base";   break;
+            case 'B': filename = "base"  ; break;
             case 'K': filename = "kalman"; break;
-            case 'M': filename = "make";   break;
-            case 'N': filename = "endog";  break;
-            case 'X': filename = "exog";   break;
-            default:  filename = "base";   break;
+            case 'M': filename = "make"  ; break;
+            case 'N': filename = "endog" ; break;
+            case 'X': filename = "exog"  ; break;
+            default:  filename = "other" ; break;
          }
       }
       else
