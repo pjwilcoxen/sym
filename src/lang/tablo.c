@@ -426,9 +426,10 @@ static void Tablo_writedecs()
 
 void Tablo_begin_file(char *basename)
 {
-   fprintf(code,"equation    (default=levels)    ;\n");
-   fprintf(code,"variable    (default=levels)    ;\n");
-   fprintf(code,"coefficient (default=parameter) ;\n");
+   fprintf(code,"equation    (default=levels)       ;\n");
+   fprintf(code,"equation    (default=add_homotopy) ;\n");
+   fprintf(code,"variable    (default=levels)       ;\n");
+   fprintf(code,"coefficient (default=parameter)    ;\n");
    fprintf(code,"\n");
 }
 
