@@ -349,6 +349,8 @@ static void Tablo_writedecs()
       free(stmt);
 
       atts = symattrib(cur);
+      if( atts->n == 0 ) 
+         addlist(files,"other");
       if( atts->n == 1 ) {
          switch( *atts->first->str ) {
             case 'B': addlist(files,"base"  ); break;
@@ -389,7 +391,7 @@ static void Tablo_writedecs()
       qual = tabloqualifier(val);
       ref  = tablovar(name,val,0);
       
-      filename = "base";
+      filename = "other";
       atts = symattrib(cur);
       if( atts->n == 1 ) {
          strncpy(buf,atts->first->str,10);
