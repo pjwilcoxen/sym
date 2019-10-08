@@ -165,6 +165,39 @@ static char *tabloqualifier(List *sets)
 
 
 //----------------------------------------------------------------------//
+//  tablo_filename()
+//
+//  Return a string with the logical Tablo file name to be used
+//  for reading and writing a given symbol. If no header has been
+//  specified, or if the initial letter of the header is not in 
+//  the usual list, return "other".
+//----------------------------------------------------------------------//
+char *tablo_filename(void *symbol) 
+{
+   List *atts;
+   char *type;
+
+   type = "other";
+
+   atts = symattrib(symbol);
+   if( atts->n >0 )
+      switch( *atts->first->str ) {
+          case 'I': type = "inter"   ; break ;
+          case 'K': type = "kalman"  ; break ;
+          case 'M': type = "make"    ; break ;
+          case 'N': type = "endog"   ; break ;
+          case 'O': type = "iotable" ; break ;
+          case 'P': type = "param"   ; break ;
+          case 'T': type = "extra"   ; break ;
+          case 'X': type = "exog"    ; break ;
+      }
+
+   free(atts);
+   return type;
+}
+
+
+//----------------------------------------------------------------------//
 //  tablo_error()
 //
 //  Print an error message and crash.  Use this routine instead of
@@ -348,19 +381,8 @@ static void Tablo_writedecs()
       wrap_write(stmt,1,0);
       free(stmt);
 
-      atts = symattrib(cur);
-      if( atts->n == 0 ) 
-         addlist(files,"other");
-      if( atts->n == 1 ) {
-         switch( *atts->first->str ) {
-            case 'B': addlist(files,"base"  ); break;
-            case 'K': addlist(files,"kalman"); break;
-            case 'M': addlist(files,"make"  ); break;
-            case 'N': addlist(files,"endog" ); break;
-            case 'X': addlist(files,"exog"  ); break;
-            default:  addlist(files,"other" ); break;
-         }
-      }
+      filename = tablo_filename(cur);
+      addlist(files,filename);
       
       free(name);
       freelist(val);
@@ -391,20 +413,11 @@ static void Tablo_writedecs()
       qual = tabloqualifier(val);
       ref  = tablovar(name,val,0);
       
-      filename = "other";
       atts = symattrib(cur);
-      if( atts->n == 1 ) {
+      filename = tablo_filename(cur);
+      if( atts->n == 1 ) 
          strncpy(buf,atts->first->str,10);
-         switch( *buf ) {
-            case 'B': filename = "base"  ; break;
-            case 'K': filename = "kalman"; break;
-            case 'M': filename = "make"  ; break;
-            case 'N': filename = "endog" ; break;
-            case 'X': filename = "exog"  ; break;
-            default:  filename = "other" ; break;
-         }
-      }
-      else
+      else 
          sprintf(buf,"H%3.3d",hdr++);
 
       stmt = concat(9,"read ",qual,"\n   ",ref," from file ",filename," header \"",buf,"\" ;");
@@ -446,17 +459,18 @@ void Tablo_end_file()
 {
    int ucount;
    void *cur;
-
+   List *atts;
+    
    ucount = 0;
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) ) 
       if( !isused(cur) )
          ucount++;
 
    fprintf(info,"\n");
-   fprintf(info,"Equations: %d\n",Tablo_eqn);
-   fprintf(info,"Variables, Used: %d\n",Tablo_var-ucount);
-   fprintf(info,"Variables, Unused: %d\n",ucount);
-   fprintf(info,"Parameters: %d\n",Tablo_par);
+   fprintf(info,"Vector equations: %d\n",Tablo_eqn);
+   fprintf(info,"Vector variables, Used: %d\n",Tablo_var-ucount);
+   fprintf(info,"Vector variables, Unused: %d\n",ucount);
+   fprintf(info,"Vector parameters: %d\n",Tablo_par);
 }
 
 //----------------------------------------------------------------------//
