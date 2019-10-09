@@ -24,6 +24,7 @@
  *--------------------------------------------------------------------*/
 
 #include "../assoc.h"
+#include "../eqns.h"
 #include "../error.h"
 #include "../lang.h"
 #include "../options.h"
@@ -63,6 +64,12 @@ Array *tabsets=0;
 static int Tablo_eqn=0;
 static int Tablo_var=0;
 static int Tablo_par=0;
+static int Tablo_scalar_eqn=0;
+
+enum har_type { 
+   h_int, h_kal, h_mak, h_end,
+   h_iot, h_par, h_ext, h_exo, 
+   h_unk };
 
 //----------------------------------------------------------------------//
 //  tabloset
@@ -165,6 +172,35 @@ static char *tabloqualifier(List *sets)
 
 
 //----------------------------------------------------------------------//
+//  tablo_type()
+//
+//  Return an enum indicating what type of header was associated with
+//  a given variable or parameter.
+//----------------------------------------------------------------------//
+enum har_type tablo_type(void *symbol) 
+{
+   List *atts;
+   enum har_type this;
+
+   this = h_unk ;
+   atts = symattrib(symbol);
+   if( atts->n >0 )
+      switch( *atts->first->str ) {
+          case 'I': this = h_int ; break ;
+          case 'K': this = h_kal ; break ;
+          case 'M': this = h_mak ; break ;
+          case 'N': this = h_end ; break ;
+          case 'O': this = h_iot ; break ;
+          case 'P': this = h_par ; break ;
+          case 'T': this = h_ext ; break ;
+          case 'X': this = h_exo ; break ;
+      }
+
+   free(atts);
+   return this;
+}
+
+//----------------------------------------------------------------------//
 //  tablo_filename()
 //
 //  Return a string with the logical Tablo file name to be used
@@ -172,28 +208,24 @@ static char *tabloqualifier(List *sets)
 //  specified, or if the initial letter of the header is not in 
 //  the usual list, return "other".
 //----------------------------------------------------------------------//
-char *tablo_filename(void *symbol) 
+char *tablo_filename(enum har_type har) 
 {
-   List *atts;
-   char *type;
+   char *filename;
 
-   type = "other";
+   filename = "other";
 
-   atts = symattrib(symbol);
-   if( atts->n >0 )
-      switch( *atts->first->str ) {
-          case 'I': type = "inter"   ; break ;
-          case 'K': type = "kalman"  ; break ;
-          case 'M': type = "make"    ; break ;
-          case 'N': type = "endog"   ; break ;
-          case 'O': type = "iotable" ; break ;
-          case 'P': type = "param"   ; break ;
-          case 'T': type = "extra"   ; break ;
-          case 'X': type = "exog"    ; break ;
+   switch( har ) {
+      case h_int: filename = "inter"   ; break ;
+      case h_kal: filename = "kalman"  ; break ;
+      case h_mak: filename = "make"    ; break ;
+      case h_end: filename = "endog"   ; break ;
+      case h_iot: filename = "iotable" ; break ;
+      case h_par: filename = "param"   ; break ;
+      case h_ext: filename = "extra"   ; break ;
+      case h_exo: filename = "exog"    ; break ;
       }
 
-   free(atts);
-   return type;
+   return filename;
 }
 
 
@@ -381,7 +413,7 @@ static void Tablo_writedecs()
       wrap_write(stmt,1,0);
       free(stmt);
 
-      filename = tablo_filename(cur);
+      filename = tablo_filename(tablo_type(cur));
       addlist(files,filename);
       
       free(name);
@@ -414,7 +446,7 @@ static void Tablo_writedecs()
       ref  = tablovar(name,val,0);
       
       atts = symattrib(cur);
-      filename = tablo_filename(cur);
+      filename = tablo_filename(tablo_type(cur));
       if( atts->n == 1 ) 
          strncpy(buf,atts->first->str,10);
       else 
@@ -450,9 +482,9 @@ void Tablo_begin_file(char *basename)
 
 
 //----------------------------------------------------------------------//
+//  Tablo_end_file()
 //
-//  End processing the file
-//
+//  End processing the file and print a lot of diagnostic information.
 //----------------------------------------------------------------------//
 
 void Tablo_end_file()
@@ -460,17 +492,108 @@ void Tablo_end_file()
    int ucount;
    void *cur;
    List *atts;
-    
+   int nv[h_unk+1];
+   int i,n,nv_end,nv_exo,nv_unk,nv_tot;
+   enum har_type har;
+   int ndiff;
+
+   //
+   //  count unused variables and scalar variables of each type
+   //
+   
+   for( i=0 ; i<=h_unk ; i++) 
+      nv[i] = 0;
+
    ucount = 0;
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) ) 
       if( !isused(cur) )
          ucount++;
+      else {
+         har = tablo_type(cur);
+         nv[har] += symsize(cur);
+      }
 
-   fprintf(info,"\n");
-   fprintf(info,"Vector equations: %d\n",Tablo_eqn);
-   fprintf(info,"Vector variables, Used: %d\n",Tablo_var-ucount);
-   fprintf(info,"Vector variables, Unused: %d\n",ucount);
-   fprintf(info,"Vector parameters: %d\n",Tablo_par);
+   //
+   //  talk about the vector model
+   //
+
+   fprintf(info,"\nVector information:\n");
+   fprintf(info,"\n   Equations: %d\n",Tablo_eqn);
+   fprintf(info,"   Variables, Used: %d\n",Tablo_var-ucount);
+   fprintf(info,"   Variables, Unused: %d\n",ucount);
+   fprintf(info,"   Parameters: %d\n",Tablo_par);
+   
+   fprintf(info,"\nTime information:\n");
+   fprintf(info,"\n   Periods used: %d\n",setsize("time"));
+
+   //
+   //  tabulate and talk about the scalar model
+   //
+
+   nv_tot = 0;
+   nv_end = 0;
+   nv_exo = 0;
+   nv_unk = 0;
+
+   for( i=0 ; i<=h_unk ; i++)
+      switch( (enum har_type) i ) {
+         case h_end:
+         case h_int:
+         case h_iot:
+         case h_ext:
+            nv_end += nv[i];
+            nv_tot += nv[i];
+            break;
+
+         case h_unk:
+            nv_unk += nv[i];
+            nv_tot += nv[i];
+            break;
+
+         case h_exo:
+         case h_kal:
+         case h_mak:
+            nv_exo += nv[i];
+            nv_tot += nv[i];
+            break;
+
+         case h_par:
+            break;
+
+         default:
+            nv_tot += nv[i];
+      }
+
+   fprintf(info,"\nScalar information:\n");
+   fprintf(info,"\n   Equations: %d\n",Tablo_scalar_eqn);
+   fprintf(info,"\n   Endogenous variables: %d\n",nv_end);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_end),nv[h_end]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_int),nv[h_int]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_iot),nv[h_iot]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_ext),nv[h_ext]);
+
+   ndiff = Tablo_scalar_eqn - nv_end;
+
+   fprintf(info,"\n   Closure:\n");
+   if( ndiff == 0 )fprintf(info,"      Equations and variables match\n");
+   if( ndiff >  0 )fprintf(info,"      Excess equations: %d\n",ndiff);
+   if( ndiff <  0 )fprintf(info,"      Excess variables: %d\n",-ndiff);
+
+   fprintf(info,"\n   Exogenous variables: %d\n",nv_exo);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_exo),nv[h_exo]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_kal),nv[h_kal]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_mak),nv[h_mak]);
+   
+   fprintf(info,"\n   Undetermined variables: %d\n",nv_unk);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_unk),nv[h_unk]);
+   
+   for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) ) 
+      if( isused(cur) && tablo_type(cur) == h_unk ) 
+         fprintf(info,"      %-13s: %d\n",symname(cur),symsize(cur));
+   
+   if( nv_tot != (nv_end + nv_exo + nv_unk) )
+      fprintf(info,"\nWarning: inconsistent variable count\n");
+
 }
 
 //----------------------------------------------------------------------//
@@ -489,6 +612,7 @@ void Tablo_begin_block(void *eq)
       Tablo_writedecs();
 
    Tablo_eqn++;
+   Tablo_scalar_eqn += eqncount(eq);
 
    qual = tabloqualifier(eqnsets(eq));
    name = eqname(eq);
