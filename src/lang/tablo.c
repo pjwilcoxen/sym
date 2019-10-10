@@ -69,7 +69,7 @@ static int Tablo_scalar_eqn=0;
 enum har_type { 
    h_int, h_kal, h_mak, h_end,
    h_iot, h_par, h_ext, h_exo, 
-   h_unk };
+   h_aen, h_aex, h_apa, h_unk };
 
 //----------------------------------------------------------------------//
 //  tabloset
@@ -186,6 +186,9 @@ enum har_type tablo_type(void *symbol)
    atts = symattrib(symbol);
    if( atts->n >0 )
       switch( *atts->first->str ) {
+          case 'A': this = h_aen ; break ;
+          case 'B': this = h_aex ; break ;
+          case 'C': this = h_apa ; break ;
           case 'I': this = h_int ; break ;
           case 'K': this = h_kal ; break ;
           case 'M': this = h_mak ; break ;
@@ -215,6 +218,9 @@ char *tablo_filename(enum har_type har)
    filename = "other";
 
    switch( har ) {
+      case h_aen: filename = "addend"  ; break ;
+      case h_aex: filename = "addexo"  ; break ;
+      case h_apa: filename = "addpar"  ; break ;
       case h_int: filename = "inter"   ; break ;
       case h_kal: filename = "kalman"  ; break ;
       case h_mak: filename = "make"    ; break ;
@@ -537,6 +543,7 @@ void Tablo_end_file()
 
    for( i=0 ; i<=h_unk ; i++)
       switch( (enum har_type) i ) {
+         case h_aen:
          case h_end:
          case h_int:
          case h_iot:
@@ -550,6 +557,7 @@ void Tablo_end_file()
             nv_tot += nv[i];
             break;
 
+         case h_aex:
          case h_exo:
          case h_kal:
          case h_mak:
@@ -557,6 +565,7 @@ void Tablo_end_file()
             nv_tot += nv[i];
             break;
 
+         case h_apa:
          case h_par:
             break;
 
@@ -571,6 +580,7 @@ void Tablo_end_file()
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_int),nv[h_int]);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_iot),nv[h_iot]);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_ext),nv[h_ext]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_aen),nv[h_aen]);
 
    ndiff = Tablo_scalar_eqn - nv_end;
 
@@ -583,6 +593,7 @@ void Tablo_end_file()
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_exo),nv[h_exo]);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_kal),nv[h_kal]);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_mak),nv[h_mak]);
+   fprintf(info,"      Type %s: %d\n",tablo_filename(h_aex),nv[h_aex]);
    
    fprintf(info,"\n   Undetermined variables: %d\n",nv_unk);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_unk),nv[h_unk]);
