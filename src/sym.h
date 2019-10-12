@@ -36,6 +36,7 @@ extern int intertemporal;
 extern int mergeonly;
 extern int only_first;
 extern int only_last;
+extern int do_scalars;
 
 #define DBG ((debug && myDEBUG)||debugforce)
 

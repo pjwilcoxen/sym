@@ -38,9 +38,10 @@ int intertemporal=0;
 int only_first=0;
 int only_last=0;
 int mergeonly=0;
+int do_scalars=0;
 
 char *usage   = "sym [options] <language> <symfile> <codefile>";
-char *options = "-version -d -dd -doc -first -last -syntax -merge_only";
+char *options = "-version -d -dd -doc -first -last -scalars -syntax -merge_only";
 
 char *doc1 = "\
 Translates models from algebraic form into one of several programming\n\
@@ -80,6 +81,11 @@ Build a single-year model using only the last year.\n\
 ### Option -merge_only\n\
 Combine all included modules and return the resulting file\n\
 without generating any target-language code.\n\
+\n\
+### Option -scalars\n\
+Only applies when the -debug language target is used. Causes\n\
+additional files to be written showing element-by-element\n\
+declarations and usage of parameters and variables.\n\
 \n\
 ### Option -syntax\n\
 Print a short summary of the input syntax, including some\n\
@@ -176,6 +182,7 @@ char *argv[];
    if( isoption("first"     ,1) )only_first = 1;
    if( isoption("last"      ,1) )only_last = 1;
    if( isoption("merge_only",1) )mergeonly =1;
+   if( isoption("scalars"   ,2) )do_scalars =1;
 
    if( only_first && only_last )
       {

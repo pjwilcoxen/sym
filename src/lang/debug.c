@@ -9,11 +9,13 @@
 .. + Equation descriptions will be written
  *--------------------------------------------------------------------*/
 
+#include "../cart.h"
 #include "../eqns.h"
 #include "../error.h"
 #include "../lang.h"
 #include "../options.h"
 #include "../output.h"
+#include "../str.h"
 #include "../sym.h"
 #include "../symtable.h"
 #include "../wprint.h"
@@ -26,6 +28,30 @@
 static int DB_block =1;
 static int DB_scalar=1;
 
+FILE *fh_dec;
+FILE *fh_use;
+
+
+void DB_begin_file(char *basename)
+{
+   char *fname;
+
+   if( do_scalars )
+      {
+      fname  = concat(2,basename,"_dec.csv");
+      fh_dec = fopen(fname,"w");
+      if( fh_dec == 0 )
+         fatal_error("Could not create file: %s",fname);
+      free( fname );
+      
+      fname  = concat(2,basename,"_use.csv");
+      fh_use = fopen(fname,"w");
+      if( fh_use == 0 )
+         fatal_error("Could not create file: %s",fname);
+      free( fname );
+      }
+}
+
 
 void DB_declare(void *sym)
 {
@@ -35,6 +61,7 @@ void DB_declare(void *sym)
    char buf[30];
    void *wp;
    Item *item;
+   List *cur;
 
    validate( sym, SYMBOBJ, "DB_declare" );
 
@@ -84,6 +111,21 @@ void DB_declare(void *sym)
 
    fprintf(code,"\n");
 
+   //  
+   //  write out scalar declarations if needed
+   //
+
+   if( do_scalars ) 
+      if( istype(sym,par) || istype(sym,var) )
+         if( valu->n == 0 )
+            fprintf(fh_dec,"%s,dec\n",name);
+         else
+            {
+            cart_build(valu);
+            while( cur=cart_next() )
+               fprintf(fh_dec,"\"%s(%s)\",dec\n",name,slprint(cur));
+            }
+
    free(name);
    free(desc);
    freelist(valu);
@@ -126,9 +168,12 @@ char *DB_show_symbol(char *str, List *sublist, Context context)
 {
    char buf[1024],*ptr;
    int i;
+   char *side[2];
 
    *buf = '\0';
-   
+   side[0] = "rhs";
+   side[1] = "lhs";
+
    for( i=context.dt ; i < 0 ; i++ )strcat(buf,"lag(");
    for( i=context.dt ; i > 0 ; i-- )strcat(buf,"lead(");
 
@@ -148,6 +193,16 @@ char *DB_show_symbol(char *str, List *sublist, Context context)
    ptr = strdup(buf);
    if( ptr == 0 )FAULT("Could not allocate memory in db_show_symbol");
 
+   //
+   //  write out scalar usage if needed
+   //
+
+   if( do_scalars )
+      if( sublist->n == 0 )
+         fprintf(fh_use,"%s,%s\n",str,side[context.lhs]);
+      else
+         fprintf(fh_use,"\"%s(%s)\",%s\n",str,slprint(sublist),side[context.lhs]);
+
    return ptr;
 }
 
@@ -157,6 +212,7 @@ char *DB_show_symbol(char *str, List *sublist, Context context)
 
 void Debug_setup(void)
 {
+   lang_begin_file ( DB_begin_file  );
    lang_declare    ( DB_declare     );
    lang_begin_block( DB_begin_block ); 
    lang_show_symbol( DB_show_symbol );

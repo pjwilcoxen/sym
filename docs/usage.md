@@ -7,7 +7,7 @@ languages.
     sym [options] <language> <symfile> <codefile>
 
 ## Options:
-    -version -d -dd -doc -first -last -syntax -merge_only
+    -version -d -dd -doc -first -last -scalars -syntax -merge_only
 
 ## Languages:
     -debug -html -msgproc -oxgs -oxgst -oxnewton -tablo -troll 
@@ -46,6 +46,11 @@ Build a single-year model using only the last year.
 Combine all included modules and return the resulting file
 without generating any target-language code.
 
+### Option -scalars
+Only applies when the -debug language target is used. Causes
+additional files to be written showing element-by-element
+declarations and usage of parameters and variables.
+
 ### Option -syntax
 Print a short summary of the input syntax, including some
 notes about rules appling to specific target languages.
@@ -54,4 +59,4 @@ notes about rules appling to specific target languages.
 Print detailed information about the versions of the main
 program and the individual language support modules.
 
-Sym v2.7.4 build 792 (2019/10/10)
+Sym v2.7.4 build 806 (2019/10/12)
