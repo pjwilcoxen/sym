@@ -37,6 +37,8 @@ struct setinfo
    int  imp;
    char *aliasof;
    char *subsetof;
+   char *rootset;
+   List *immsups;
    struct setinfo *next;
    };
 
@@ -45,6 +47,8 @@ struct setinfo *aliases=0;
 struct setinfo *subsets=0;
 
 static int issameset(char*,char*);
+
+static int sups_built=0;
 
 /*-------------------------------------------------------------------*
  *  newset
@@ -66,6 +70,8 @@ static struct setinfo *newset(char *name, List *ele)
    new->imp      = 0;
    new->aliasof  = 0;
    new->subsetof = 0;
+   new->rootset  = 0;
+   new->immsups  = 0;
    new->next     = 0;
 
    //  first set of all?
@@ -264,6 +270,105 @@ static void build_time_sets()
    freelist( timevals );
 }
 
+
+/*-------------------------------------------------------------------*
+ *  findroot
+ *
+ *  Find the ultimate superset set of a given set by following 
+ *  subsetof statements upward until reaching a set that isn't 
+ *  a subset. Needed to prevent potential problems when inferring
+ *  other subset relationships in cases where multiple root sets 
+ *  use elements that have the same names.
+ *-------------------------------------------------------------------*/
+char *findroot(char *setname) 
+{
+   struct setinfo *s;
+
+   validate( setname, 0, "findroot" );
+   
+   s = findset(setname);
+   if( s==0 )
+      FAULT("failed to find set in findroot");
+   
+   if( s->subsetof == 0 )
+      return( strdup(s->name) );
+   
+   return findroot( s->subsetof );
+}
+
+
+/*-------------------------------------------------------------------*
+ *  build_immediate_sups
+ *
+ *  For each set, build a list of the supersets one tier above.
+ *  For example, if A is a subset of B and C, and B is a subset 
+ *  of D, A's immediate subset list will be [B,C] but won't 
+ *  include D. Convenient for avoiding redundancy in subset
+ *  declarations for target languages. 
+ *-------------------------------------------------------------------*/
+void build_immediate_sups() 
+{
+   struct setinfo *cur_set,*alt_set;
+   Item *cur,*other;
+   List *all,*sel;
+   int keep_cur;
+
+   if( sups_built > 0 )
+      FAULT("attempted rebuild of immediate sups"); 
+
+   //
+   //  find root set for every set in the list by following
+   //  explicit subset declarations backward
+   //
+
+   for( cur_set=sethead ; cur_set ; cur_set=cur_set->next )
+      cur_set->rootset = findroot( cur_set->name );
+
+   //
+   //  walk through all the sets again to set their 
+   //  superset lists
+   //
+
+   for( cur_set=sethead ; cur_set ; cur_set=cur_set->next )
+      {
+
+      //  find all supersets of the current set
+
+      all = newlist();
+      for( alt_set=sethead ; alt_set ; alt_set=alt_set->next )
+         if( strcmp(alt_set->name,cur_set->name) != 0 )
+            if( strcmp(alt_set->rootset,cur_set->rootset) == 0 )
+               if( issubset(cur_set->name,alt_set->name) )
+                  addlist( all, alt_set->name );
+
+      //  trim out those that are supersets of other sets
+      //  in the list to avoid redundant declarations
+
+      sel = newlist();
+      if( all->n )
+         for( cur=all->first ; cur ; cur=cur->next )
+            {
+            keep_cur = 1;
+            for( other=all->first ; other ; other=other->next )
+               if( issubset(other->str,cur->str) )
+                  keep_cur = 0;
+            if( keep_cur )
+               addlist( sel, cur->str );
+            }
+            
+      //  attach it to the right place in the master set list and 
+      //  tidy up
+      
+      cur_set->immsups = sel;
+      freelist(all);
+      }
+
+   // 
+   //  set the flag indicating that the relationships have been built
+   //
+
+   sups_built = 1;
+}
 
 //====================================================================
 //  
@@ -661,3 +766,26 @@ char *getsupset(char *subname)
    return strdup(s->subsetof);
 }
 
+
+/*-------------------------------------------------------------------*
+ *  find_immediate_sups
+ *
+ *  Return the immediate supersets of the current set.
+ *-------------------------------------------------------------------*/
+List *find_immediate_sups(char *setname) 
+{
+   struct setinfo *s;
+
+   validate( setname, 0, "find_immediate_sups" );
+   
+   if( sups_built == 0 )
+      build_immediate_sups();
+   
+   s = findset(setname);
+   if( s==0 )
+      FAULT("could not find set in find_immediate_sets");
+   if( s->immsups == 0 )
+      FAULT("no immediate sup list");
+   
+   return( s->immsups );
+}

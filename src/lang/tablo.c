@@ -334,16 +334,15 @@ static void Tablo_writedecs()
    //  write out subset statements
    //
    
-   for( cur=firstsymbol(set), n=0 ; cur ; cur=nextsymbol(cur), n++ )
+   for( cur=firstsymbol(set) ; cur ; cur=nextsymbol(cur) )
       {
-      char *supset;
-      name   = symname(cur);
-      supset = getsupset(name);
-      if( supset )
-         {
-         fprintf(code,"subset %s is subset of %s ;\n",name,supset);
-         free(supset);
-         }
+      List *sups;
+      Item *c;
+      name = symname(cur);
+      sups = find_immediate_sups( name );
+      if( sups->n )
+         for( c=sups->first ; c ; c=c->next )
+            fprintf(code,"subset %s is subset of %s ;\n",name,c->str);
       free(name);
       }
 
