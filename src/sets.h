@@ -19,6 +19,7 @@ void  build_set_relationships();
 void  listelements();
 void  setalias(char*,char*);
 void  setsubset(char*,char*);
+char* findbase(char*);
 List* find_immediate_sups(char *);
 
 #endif /* SETS_H */

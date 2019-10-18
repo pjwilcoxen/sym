@@ -25,6 +25,9 @@ of sym.\n\
     SET name = prevset(elements)     ['description'] ;\n\
     SET name = prevset + (elements)  ['description'] ;\n\
     SET name = prevset - (elements)  ['description'] ;\n\
+    SET name = prevset + otherset    ['description'] ;\n\
+    SET name = prevset - otherset    ['description'] ;\n\
+    SET name = UNION(setlist)        ['description'] ;\n\
 \n\
 ## Variable and Parameter Declarations:\n\
 \n\

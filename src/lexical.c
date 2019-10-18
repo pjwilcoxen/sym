@@ -51,6 +51,7 @@ struct {
    "set",       rtn_node,	SET,
    "sum",       rtn_only,  SUM,
    "time",      rtn_node,  TIME,
+   "union",     rtn_node,  UNION,
    "var",	    rtn_node,	VAR,
    "variable",	 rtn_node,	VAR,
    0,		       rtn_node,	NAME

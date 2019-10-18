@@ -136,7 +136,7 @@ static struct setinfo *lookupset(char *name)
  *  Look up a set in the list by name. Abort if the set doesn't 
  *  exist.
  *-------------------------------------------------------------------*/
-static struct setinfo *findset(char *name)
+struct setinfo *findset(char *name)
 {
    struct setinfo *cur;
    cur = lookupset(name);
@@ -272,32 +272,6 @@ static void build_time_sets()
 
 
 /*-------------------------------------------------------------------*
- *  findroot
- *
- *  Find the ultimate superset set of a given set by following 
- *  subsetof statements upward until reaching a set that isn't 
- *  a subset. Needed to prevent potential problems when inferring
- *  other subset relationships in cases where multiple root sets 
- *  use elements that have the same names.
- *-------------------------------------------------------------------*/
-char *findroot(char *setname) 
-{
-   struct setinfo *s;
-
-   validate( setname, 0, "findroot" );
-   
-   s = findset(setname);
-   if( s==0 )
-      FAULT("failed to find set in findroot");
-   
-   if( s->subsetof == 0 )
-      return( strdup(s->name) );
-   
-   return findroot( s->subsetof );
-}
-
-
-/*-------------------------------------------------------------------*
  *  build_immediate_sups
  *
  *  For each set, build a list of the supersets one tier above.
@@ -306,7 +280,7 @@ char *findroot(char *setname)
  *  include D. Convenient for avoiding redundancy in subset
  *  declarations for target languages. 
  *-------------------------------------------------------------------*/
-void build_immediate_sups() 
+static void build_immediate_sups() 
 {
    struct setinfo *cur_set,*alt_set;
    Item *cur,*other;
@@ -322,7 +296,7 @@ void build_immediate_sups()
    //
 
    for( cur_set=sethead ; cur_set ; cur_set=cur_set->next )
-      cur_set->rootset = findroot( cur_set->name );
+      cur_set->rootset = findbase( cur_set->name );
 
    //
    //  walk through all the sets again to set their 
@@ -427,7 +401,7 @@ void build_set_relationships()
          if( isequal(sub->name,s->name) )
             {
             s->subset   = 1;
-            s->subsetof = sub->subsetof; 
+            s->subsetof = sub->subsetof;
             }
    
    // 
@@ -732,6 +706,9 @@ int isimplicit(char *setname)
  *  setsubset
  *
  *  Record the fact that one set is a proper subset of another.
+ *  Needed because the information has to be recorded before the
+ *  actual set objects have been built, which is not done until
+ *  build_set_relationships is called.
  *-------------------------------------------------------------------*/
 void setsubset(char *subname, char *supname )
 {
@@ -741,13 +718,13 @@ void setsubset(char *subname, char *supname )
    new->name     = strdup(subname);
    new->subsetof = strdup(supname);
    new->next     = 0;
-   
+ 
    if( subsets==0 )
       {
       subsets = new;
       return;
       }
-      
+
    for( last=subsets ; last->next ; last=last->next );
    last->next = new;
 }
@@ -764,6 +741,32 @@ char *getsupset(char *subname)
    s = findset(subname);
    if( s == 0 || s->subsetof == 0)return 0;
    return strdup(s->subsetof);
+}
+
+
+/*-------------------------------------------------------------------*
+ *  findbase
+ *
+ *  Find the ultimate superset set of a given set by following 
+ *  subsetof statements upward until reaching a set that isn't 
+ *  a subset. Needed to prevent potential problems when inferring
+ *  other subset relationships in cases where multiple root sets 
+ *  use elements that have the same names.
+ *-------------------------------------------------------------------*/
+char *findbase(char *setname) 
+{
+   struct setinfo *s;
+
+   validate( setname, 0, "findbase" );
+   
+   s = findset(setname);
+   if( s==0 )
+      FAULT("failed to find set in findbase");
+   
+   if( s->subsetof == 0 )
+      return( strdup(s->name) );
+   
+   return findbase( s->subsetof );
 }
 
 

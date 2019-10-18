@@ -16,6 +16,7 @@ typedef enum
    nul, nam, num, lst, dom,
    add, sub, mul, dvd, pow, log, exp, neg,
    lag, led, sum, prd,
+   sad, ssu,
    equ
    }
    Nodetype ;

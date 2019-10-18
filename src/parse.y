@@ -25,6 +25,7 @@ void yyerror(char*);
 %token SET VAR PAR EQU
 %token LEAD LAG NEXT
 %token TIME FIRST LAST
+%token UNION
 
 %left    ','
 %right   '='
@@ -72,6 +73,9 @@ stmt     : /* empty */
 ..     SET name = prevset(elements)     ['description'] ;
 ..     SET name = prevset + (elements)  ['description'] ;
 ..     SET name = prevset - (elements)  ['description'] ;
+..     SET name = prevset + otherset    ['description'] ;
+..     SET name = prevset - otherset    ['description'] ;
+..     SET name = UNION(setlist)        ['description'] ;
 ..
 .. ## Variable and Parameter Declarations:
 .. 
@@ -110,6 +114,12 @@ decset   : SET tiok '(' list ')'                      { declare($1,$2,$4, 0, 0) 
          | SET NAME '=' NAME '+' '(' list ')' STRING  { decset ($2,$4,add,$7,$9); }
          | SET NAME '=' NAME '-' '(' list ')'         { decset ($2,$4,sub,$7, 0); }
          | SET NAME '=' NAME '-' '(' list ')' STRING  { decset ($2,$4,sub,$7,$9); }
+         | SET NAME '=' NAME '+' NAME                 { decset ($2,$4,sad,$6, 0); }
+         | SET NAME '=' NAME '+' NAME STRING          { decset ($2,$4,sad,$6,$7); }
+         | SET NAME '=' NAME '-' NAME                 { decset ($2,$4,ssu,$6, 0); }
+         | SET NAME '=' NAME '-' NAME STRING          { decset ($2,$4,ssu,$6,$7); }
+         | SET NAME '=' UNION '(' list ')'            { decunion($2,$6, 0); }
+         | SET NAME '=' UNION '(' list ')' STRING     { decunion($2,$6,$7); }
          ;
 
 tiok     : NAME

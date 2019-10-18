@@ -21,6 +21,9 @@ of sym.
     SET name = prevset(elements)     ['description'] ;
     SET name = prevset + (elements)  ['description'] ;
     SET name = prevset - (elements)  ['description'] ;
+    SET name = prevset + otherset    ['description'] ;
+    SET name = prevset - otherset    ['description'] ;
+    SET name = UNION(setlist)        ['description'] ;
 
 ## Variable and Parameter Declarations:
 

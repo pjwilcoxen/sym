@@ -161,15 +161,17 @@ Node *type,*name,*defn,*label,*attr;
 
 void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
 {
-   List *newset,*srcset;
+   List *newset,*srcset,*altset;
    Node *m;
    int  alias=0;
-   char *labelstr,*decfmt,*srcname;
+   char *labelstr,*decfmt,*altname;
    Item *e;
+   void *sym;
 
    newset = 0;
    srcset = 0;
-   
+   altset = 0;
+
    //
    //  defining an alias?
    //
@@ -196,13 +198,13 @@ void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
    //  get the base set
    //
    
-   srcname = lookup(source->str);
-   if( srcname==0 )
+   sym = lookup(source->str);
+   if( sym==0 )
       {
       error_front("Definition of set '%s' uses undefined set '%s'\n",name->str,source->str);
       exit(0);
       }
-   srcset = symvalue(srcname);
+   srcset = symvalue(sym);
 
    //
    //  set up operation
@@ -224,6 +226,19 @@ void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
       case equ:
          newset = newsequence();
          validate( mods, NODEOBJ, "decset" );
+         break;
+
+      case sad:
+      case ssu:
+         newset = duplist( srcset );
+         validate( mods, NODEOBJ, "decset" );
+         altname = lookup(mods->str);
+         if( altname==0 )
+            {
+            error_front("Definition of set '%s' uses undefined set '%s'\n",name->str,mods->str);
+            exit(0);
+            }
+         altset = symvalue(altname);
          break;
 
       default:
@@ -257,6 +272,22 @@ void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
                addlist( newset, m->str );
             else
                error_front(decfmt,name->str,m->str,"is not",source->str);
+            break;
+
+         case sad:
+            for( e=altset->first ; e ; e=e->next )
+               if( ismember(e->str,newset)==0 )
+                  addlist( newset, e->str );
+               else
+                  error_front(decfmt,name->str,e->str,"is already",source->str);
+            break;
+
+         case ssu:
+            for( e=altset->first ; e ; e=e->next )
+               if( ismember(e->str,newset) )
+                  freeitem( newset, e->str );
+               else
+                  error_front(decfmt,name->str,e->str,"is not",source->str);
             break;
 
          default:
@@ -300,6 +331,12 @@ void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
    if( op == add )setsubset(source->str,name->str);
    if( op == sub )setsubset(name->str,source->str);
    if( op == equ )setsubset(name->str,source->str);
+   if( op == sad )
+      {
+      setsubset(source->str,name->str);
+      setsubset(mods->str,name->str);
+      }
+   if( op == ssu )setsubset(name->str,source->str);
 
    //
    //  free everything that's no longer needed
@@ -307,6 +344,7 @@ void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
    
    freelist(srcset);
    freelist(newset);
+   freelist(altset);
 
    freenode( name   );
    freenode( source );
@@ -314,3 +352,78 @@ void decset(Node *name, Node *source, Nodetype op, Node *mods, Node *desc)
    freenode( desc   );
 }
 
+
+//----------------------------------------------------------------------
+//  decunion()
+//
+//  Handle declarations of set unions
+//----------------------------------------------------------------------
+
+void decunion(Node *name, Node *srcs, Node *desc)
+{
+   List *newset,*srcset;
+   Node *s;
+   char *labelstr;
+   Item *e;
+   void *sym;
+
+   newset = 0;
+   srcset = 0;
+
+   // 
+   //  check basic arguments
+   //
+   
+   validate( name, NODEOBJ, "decset" );
+   validate( srcs, NODEOBJ, "decset" );
+   if( desc )validate( desc, NODEOBJ, "decset" );
+   
+   //
+   //  check the name against the optional reserved word list
+   //
+
+   if( is_reserved_word(name->str) )
+      error_back("Cannot use reserved word '%s' as a name",name->str);
+
+   //
+   //  build the set
+   //
+
+   newset = newlist();
+
+   for( s=srcs ; s ; s=s->r )
+      {
+      sym = lookup(s->str);
+      if( sym==0 )
+         {
+         error_front("Definition of set '%s' uses undefined set '%s'\n",name->str,s->str);
+         exit(0);
+         }
+
+      srcset = symvalue(sym);
+
+      for( e=srcset->first ; e ; e=e->next )
+         if( ismember(e->str,newset)==0 )
+            addlist( newset, e->str );
+
+      setsubset(s->str,name->str);
+
+      freelist(srcset);
+      }
+      
+   //
+   //  create the new symbol table entry
+   //
+
+   labelstr = desc ? desc->str : 0 ;
+
+   symdeclare(set,name->str,newset,labelstr,0);
+
+   //
+   //  free things no longer needed
+   //
+
+   freenode( name );
+   freenode( srcs );
+   freenode( desc );
+}

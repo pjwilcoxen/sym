@@ -11,5 +11,6 @@
 
 void declare(Node*,Node*,Node*,Node*,Node*);
 void decset(Node*,Node*,Nodetype,Node*,Node*);
+void decunion(Node*,Node*,Node*);
 
 #endif /* DECLARE_H */
