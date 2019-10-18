@@ -692,7 +692,7 @@ void listsymbols()
    void *cur,*wp;
    char fmt[1024];
    int namelen,max_namelen;
-   char *title,*desc;
+   char *title,*desc,*base;
    List *attr;
    Symboltype type,types[3];
    int i;
@@ -735,6 +735,16 @@ void listsymbols()
          {
          title = symname(cur);
          fprintf(info,"   %s\n",title);
+
+         if( type == set )
+            {
+            fprintf(info,"      Base set: ");
+            base = findbase(title);
+            if( strcmp(base,title)==0 )
+               fprintf(info,"self\n");
+            else
+               fprintf(info,"%s\n",base);
+            }
 
          desc = symdescrip(cur);
          attr = symattrib(cur);
