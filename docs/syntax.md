@@ -33,6 +33,7 @@ of sym.
 ## Equations:
 
     [EQUATION name|/name/] [sets:] expr = expr ['description'] [attributes];
+    ['description'] [EQUATION name|/name/] [sets:] expr = expr [attributes];
 
 ## Expressions:
 

@@ -1,7 +1,7 @@
 #ifndef BUILD_H
 #define BUILD_H
 
-static char *verstr = "build 845 (2019/10/18)" ;
-static char *gitver = "v2.7.4" ;
+static char *verstr = "build 846 (2019/10/22)" ;
+static char *gitver = "v2.8.0" ;
 
 #endif /* BUILD_H */

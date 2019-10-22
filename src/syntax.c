@@ -37,6 +37,7 @@ of sym.\n\
 ## Equations:\n\
 \n\
     [EQUATION name|/name/] [sets:] expr = expr ['description'] [attributes];\n\
+    ['description'] [EQUATION name|/name/] [sets:] expr = expr [attributes];\n\
 \n\
 ## Expressions:\n\
 \n\

@@ -134,25 +134,34 @@ forl     : FIRST
 .. ## Equations:
 ..
 ..     [EQUATION name|/name/] [sets:] expr = expr ['description'] [attributes];
+..     ['description'] [EQUATION name|/name/] [sets:] expr = expr [attributes];
 ..
 */
 
-eqn      :        expr '=' expr                  { neweqn( 0,$1,$3, 0, 0, 0); }
-         |        expr '=' expr      STRING      { neweqn( 0,$1,$3, 0, 0,$4); }
-         |        expr '=' expr             attr { neweqn( 0,$1,$3,$4, 0, 0); }
-         |        expr '=' expr      STRING attr { neweqn( 0,$1,$3,$5, 0,$4); }
-         |        qual expr '=' expr             { neweqn($1,$2,$4, 0, 0, 0); }
-         |        qual expr '=' expr STRING      { neweqn($1,$2,$4, 0, 0,$5); }
-         |        qual expr '=' expr        attr { neweqn($1,$2,$4,$5, 0, 0); }
-         |        qual expr '=' expr STRING attr { neweqn($1,$2,$4,$6, 0,$5); }
-         | eqname expr '=' expr                  { neweqn( 0,$2,$4, 0,$1, 0); }
-         | eqname expr '=' expr      STRING      { neweqn( 0,$2,$4, 0,$1,$5); }
-         | eqname expr '=' expr             attr { neweqn( 0,$2,$4,$5,$1, 0); }
-         | eqname expr '=' expr      STRING attr { neweqn( 0,$2,$4,$6,$1,$5); }
-         | eqname qual expr '=' expr             { neweqn($2,$3,$5, 0,$1, 0); }
-         | eqname qual expr '=' expr STRING      { neweqn($2,$3,$5, 0,$1,$6); }
-         | eqname qual expr '=' expr        attr { neweqn($2,$3,$5,$6,$1, 0); }
-         | eqname qual expr '=' expr STRING attr { neweqn($2,$3,$5,$7,$1,$6); }
+eqn      :               expr '=' expr                  { neweqn( 0,$1,$3, 0, 0, 0); }
+         |               expr '=' expr      STRING      { neweqn( 0,$1,$3, 0, 0,$4); }
+         |        STRING expr '=' expr                  { neweqn( 0,$2,$4, 0, 0,$1); }
+         |               expr '=' expr             attr { neweqn( 0,$1,$3,$4, 0, 0); }
+         |               expr '=' expr      STRING attr { neweqn( 0,$1,$3,$5, 0,$4); }
+         |        STRING expr '=' expr             attr { neweqn( 0,$2,$4,$5, 0,$1); }
+         |               qual expr '=' expr             { neweqn($1,$2,$4, 0, 0, 0); }
+         |               qual expr '=' expr STRING      { neweqn($1,$2,$4, 0, 0,$5); }
+         |        STRING qual expr '=' expr             { neweqn($2,$3,$5, 0, 0,$1); }
+         |               qual expr '=' expr        attr { neweqn($1,$2,$4,$5, 0, 0); }
+         |               qual expr '=' expr STRING attr { neweqn($1,$2,$4,$6, 0,$5); }
+         |        STRING qual expr '=' expr        attr { neweqn($2,$3,$5,$6, 0,$1); }
+         |        eqname expr '=' expr                  { neweqn( 0,$2,$4, 0,$1, 0); }
+         |        eqname expr '=' expr      STRING      { neweqn( 0,$2,$4, 0,$1,$5); }
+         | STRING eqname expr '=' expr                  { neweqn( 0,$3,$5, 0,$2,$1); }
+         |        eqname expr '=' expr             attr { neweqn( 0,$2,$4,$5,$1, 0); }
+         |        eqname expr '=' expr      STRING attr { neweqn( 0,$2,$4,$6,$1,$5); }
+         | STRING eqname expr '=' expr             attr { neweqn( 0,$3,$5,$6,$2,$1); }
+         |        eqname qual expr '=' expr             { neweqn($2,$3,$5, 0,$1, 0); }
+         |        eqname qual expr '=' expr STRING      { neweqn($2,$3,$5, 0,$1,$6); }
+         | STRING eqname qual expr '=' expr             { neweqn($3,$4,$6, 0,$2,$1); }
+         |        eqname qual expr '=' expr        attr { neweqn($2,$3,$5,$6,$1, 0); }
+         |        eqname qual expr '=' expr STRING attr { neweqn($2,$3,$5,$7,$1,$6); }
+         | STRING eqname qual expr '=' expr        attr { neweqn($3,$4,$6,$7,$2,$1); }
          ;
 
 eqname   : '/' NAME '/'          { $$ = $2; }
