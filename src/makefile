@@ -106,7 +106,7 @@ backup :
 	datename -t sym.zip
 
 clean:
-	rm -f *.$(OBJ) lang/*.$(OBJ) parse.c $(EXE) readme_*.md
+	rm -f *~ *.{o,obj} lang/*.{o,obj} parse.c $(EXE) readme_*.md
 
 #
 # header file dependencies 
