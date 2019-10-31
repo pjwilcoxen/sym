@@ -8,6 +8,7 @@
 #include "assoc.h"
 
 #include "error.h"
+#include "lists.h"
 #include "str.h"
 #include "sym.h"
 #include "xmalloc.h"
@@ -143,3 +144,24 @@ void setvalue(Array *array, char *name, void *value)
    addvalue(array,name,value);
 }
 
+
+/*--------------------------------------------------------------------*
+ *  getkeys()
+ *--------------------------------------------------------------------*/
+List *getkeys(Array *array)
+{
+   Element *cur;
+   List *keys;
+
+   validate( array, ARRAYOBJ, "getkeys" );
+
+   keys = newlist();
+
+   for( cur=array->first ; cur ; cur=cur->next )
+      if( ismember( cur->name, keys ) )
+         FAULT("duplicate key in getkeys");
+      else
+         addlist( keys, cur->name );
+
+   return keys;
+}

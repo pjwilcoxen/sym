@@ -9,6 +9,8 @@
 #ifndef ASSOC_H
 #define ASSOC_H
 
+#include "lists.h"
+
 #define ELEOBJ   1221
 #define ARRAYOBJ 1222
 
@@ -38,5 +40,6 @@ Array* newarray();
 int    addvalue(Array*, char*, void*);
 void   setvalue(Array*, char*, void*);
 void*  getvalue(Array*, char*);
+List*  getkeys(Array*);
 
 #endif /* ASSOC_H */
