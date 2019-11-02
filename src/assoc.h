@@ -39,6 +39,5 @@ typedef struct assoc_array
 Array* newarray();
 int    addvalue(Array*, char*, void*);
 void*  getvalue(Array*, char*);
-List*  getkeys(Array*);
 
 #endif /* ASSOC_H */

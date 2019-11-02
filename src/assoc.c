@@ -125,23 +125,3 @@ for( cur=array->first ; cur ; cur=cur->next )
 }
 
 
-/*--------------------------------------------------------------------*
- *  getkeys()
- *--------------------------------------------------------------------*/
-List *getkeys(Array *array)
-{
-   Element *cur;
-   List *keys;
-
-   validate( array, ARRAYOBJ, "getkeys" );
-
-   keys = newlist();
-
-   for( cur=array->first ; cur ; cur=cur->next )
-      if( ismember( cur->name, keys ) )
-         FAULT("duplicate key in getkeys");
-      else
-         addlist( keys, cur->name );
-
-   return keys;
-}
