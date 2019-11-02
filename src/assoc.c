@@ -126,26 +126,6 @@ for( cur=array->first ; cur ; cur=cur->next )
 
 
 /*--------------------------------------------------------------------*
- *  setvalue()
- *--------------------------------------------------------------------*/
-void setvalue(Array *array, char *name, void *value)
-{
-   Element *cur;
-
-   validate( array, ARRAYOBJ, "getelement" );
-
-   for( cur=array->first ; cur ; cur=cur->next )
-      if( strcasecmp(name,cur->name)==0 )
-         {
-         cur->value = value;
-         return;
-         }
-
-   addvalue(array,name,value);
-}
-
-
-/*--------------------------------------------------------------------*
  *  getkeys()
  *--------------------------------------------------------------------*/
 List *getkeys(Array *array)
