@@ -48,7 +48,7 @@ without generating any target-language code.
 
 ### Option -scalars
 Only applies when the -debug language target is used. Causes
-additional files to be written showing element-by-element
+an additional file to be written showing element-by-element
 declarations and usage of parameters and variables.
 
 ### Option -syntax
@@ -59,4 +59,4 @@ notes about rules appling to specific target languages.
 Print detailed information about the versions of the main
 program and the individual language support modules.
 
-Sym v2.8.0 build 855 (2019/11/02)
+Sym v2.8.0 build 910 (2019/11/05)

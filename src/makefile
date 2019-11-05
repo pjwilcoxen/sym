@@ -1,6 +1,10 @@
-#TAR=watcom
+#
+#  Set target platform
+#
+
+TAR=watcom
 #TAR=gcc
-TAR=mingw_32
+#TAR=mingw_32
 #TAR=mingw_64
 
 #  To set a default target, add a line with TAR=target to 
@@ -8,6 +12,10 @@ TAR=mingw_32
 #  file if it exists.
 
 -include makefile-tar
+
+#
+#  Now set up the target's details
+#
 
 OBJ  = o
 EXE  = sym.exe
@@ -34,18 +42,28 @@ ifeq ($(TAR),watcom)
    OPT  = 
 endif
 
-OBJS = assoc.$(OBJ) command.$(OBJ) declare.$(OBJ) \
-	   nodes.$(OBJ) output.$(OBJ) \
-	   parse.$(OBJ) spprint.$(OBJ) \
-	   symtable.$(OBJ) xmalloc.$(OBJ) \
-      lists.$(OBJ) sets.$(OBJ) eqns.$(OBJ) \
-      readfile.$(OBJ) syntax.$(OBJ) error.$(OBJ) options.$(OBJ) \
-      numsub.$(OBJ) refinesets.$(OBJ) cart.$(OBJ) str.$(OBJ) \
-      lang.$(OBJ) default.$(OBJ) wprint.$(OBJ) langdoc.$(OBJ)
-      
-LANGS = lang/setup.$(OBJ) lang/debug.$(OBJ) lang/msgproc.$(OBJ) \
-        lang/oxnewton.$(OBJ) lang/troll.$(OBJ) lang/tablo.$(OBJ) \
-        lang/html.$(OBJ) lang/oxgs.$(OBJ) lang/oxgst.$(OBJ)
+#
+#  List of core modules
+#
+
+SRC_CORE = assoc cart command declare default dict eqns error \
+           lang langdoc lists nodes numsub options output \
+			  parse readfile refinesets sets spprint str symtable \
+			  syntax wprint xmalloc
+
+OBJS = $(addsuffix .$(OBJ), $(SRC_CORE))
+
+#
+#  List of language modules
+#
+
+SRC_LANG = debug html msgproc oxgs oxgst oxnewton setup tablo troll
+
+LANGS = $(addprefix lang/,$(addsuffix .$(OBJ), $(SRC_LANG)))
+
+#
+#  Build logic follows
+#
 
 LANGLINK = $(LANGS)
 ifeq ($(TAR),watcom)
@@ -119,6 +137,7 @@ command.$(OBJ): command.c
 declare.$(OBJ): declare.c declare.h nodes.h lists.h error.h options.h sets.h \
  str.h sym.h symtable.h
 default.$(OBJ): default.c lang.h output.h lists.h str.h sym.h
+dict.$(OBJ): dict.c error.h lists.h xmalloc.h
 eqns.$(OBJ): eqns.c eqns.h nodes.h lists.h error.h options.h sets.h spprint.h \
  str.h sym.h symtable.h xmalloc.h
 error.$(OBJ): error.c error.h output.h lists.h sym.h

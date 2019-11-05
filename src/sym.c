@@ -84,7 +84,7 @@ without generating any target-language code.\n\
 \n\
 ### Option -scalars\n\
 Only applies when the -debug language target is used. Causes\n\
-additional files to be written showing element-by-element\n\
+an additional file to be written showing element-by-element\n\
 declarations and usage of parameters and variables.\n\
 \n\
 ### Option -syntax\n\
@@ -204,6 +204,9 @@ char *argv[];
       
       set_language(lang);
    }
+
+   if( do_scalars && strcmp(lang,"debug") != 0 )
+      fatal_error("%s","Option -scalars is only supported for target debug\n");
 
    //
    //  assemble file names

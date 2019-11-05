@@ -10,6 +10,7 @@
  *--------------------------------------------------------------------*/
 
 #include "../cart.h"
+#include "../dict.h"
 #include "../eqns.h"
 #include "../error.h"
 #include "../lang.h"
@@ -18,6 +19,7 @@
 #include "../str.h"
 #include "../sym.h"
 #include "../symtable.h"
+#include "../xmalloc.h"
 #include "../wprint.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,12 +27,104 @@
 
 #define  myDEBUG 1
 
-static int DB_block =1;
-static int DB_scalar=1;
+//
+//  Object ID for scalars
+//
 
-FILE *fh_dec;
-FILE *fh_use;
+#define SCALOBJ 3030
 
+//
+//  Internal variables
+//
+
+static int  DB_block =1;
+static int  DB_scalar=1;
+
+static void *scalar_dict=0;
+
+//
+//  Scalar information file handle
+//
+
+FILE *fh_sca;
+
+//
+//  Variable types for handling information about scalars
+//
+
+typedef struct scalar_info {
+   int obj;
+   char *name;
+   int dec;
+   int lhs;
+   int rhs;
+   } Scalar ;
+
+typedef enum {
+   sca_dec, sca_lhs, sca_rhs
+   } ScalarRef ;
+
+//
+//  Private methods
+//
+
+//----------------------------------------------------------------------//
+//  saw_scalar()
+//  
+//  Count the appearance of a scalar in different contexts.
+//----------------------------------------------------------------------//
+
+static void saw_scalar(char *name, void *subs, ScalarRef where) 
+{
+   Scalar *cur;
+   char *fullname,*concat();
+
+   validate( name, 0, "saw_scalar" );
+   
+   if( scalar_dict == 0 ) 
+      scalar_dict = newdict(60000);
+   
+   if( subs )
+      fullname = concat(4,name,"(",slprint(subs),")");
+   else
+      fullname = name;
+
+   cur = (Scalar *) getdict(scalar_dict,fullname);
+   if( cur == 0 )
+      {
+      cur = (Scalar *) xmalloc( sizeof(Scalar) );
+      cur->obj = SCALOBJ;
+      cur->name = strdup(fullname);
+      cur->dec  = 0;
+      cur->lhs  = 0;
+      cur->rhs  = 0;
+      putdict(scalar_dict,fullname,cur);
+      }
+   
+   validate( cur, SCALOBJ, "saw_scalar" );
+
+   switch( where )
+      {
+      case sca_dec: cur->dec++; break;
+      case sca_lhs: cur->lhs++; break;
+      case sca_rhs: cur->rhs++; break;
+      default:
+         FAULT("unexpected op in saw_scalar");
+      }
+
+   if( subs )
+      free( fullname );
+}
+
+//
+//  Public methods
+//
+
+//----------------------------------------------------------------------//
+//  DB_begin_file()
+//
+//  Begin processing the file
+//----------------------------------------------------------------------//
 
 void DB_begin_file(char *basename)
 {
@@ -38,20 +132,74 @@ void DB_begin_file(char *basename)
 
    if( do_scalars )
       {
-      fname  = concat(2,basename,"_dec.csv");
-      fh_dec = fopen(fname,"w");
-      if( fh_dec == 0 )
-         fatal_error("Could not create file: %s",fname);
-      free( fname );
-      
-      fname  = concat(2,basename,"_use.csv");
-      fh_use = fopen(fname,"w");
-      if( fh_use == 0 )
+      fname  = concat(2,basename,"_scalars.csv");
+      fh_sca = fopen(fname,"w");
+      if( fh_sca == 0 )
          fatal_error("Could not create file: %s",fname);
       free( fname );
       }
 }
 
+
+//----------------------------------------------------------------------//
+//  DB_end_file()
+//
+//  End processing the file. Do nothing unless do_scalars was set
+//  and some scalars were seen. Then write the scalars file.
+//----------------------------------------------------------------------//
+
+void DB_end_file()
+{
+   List *keys;
+   Item *cur;
+   Scalar *entry;
+   int unused = 0;
+
+   if( do_scalars == 0 ) 
+      return;
+   
+   if( scalar_dict == 0 ) 
+      {
+      fclose( fh_sca );
+      return;
+      }
+
+   printf("writing information about scalars...");
+   fflush(stdout);
+
+   keys = getkeys(scalar_dict);
+
+   fprintf(fh_sca,"name,dec,lhs,rhs\n");
+
+   for( cur=keys->first ; cur ; cur=cur->next )
+      {
+      entry = getdict(scalar_dict,cur->str);
+      if( entry==0 )
+         FAULT("failed to find valid scalar key");
+      if( (entry->lhs + entry->rhs) == 0 )
+         unused++;
+      fprintf(fh_sca,"\"%s\",%d,%d,%d\n",cur->str,entry->dec,entry->lhs,entry->rhs);
+      }
+
+   printf("done\n");
+   fflush(stdout);
+
+   fprintf(info,"\nScalar information:\n\n");
+   fprintf(info,"   Total found: %d\n",keys->n);
+   fprintf(info,"   Number unused: %d\n",unused);
+
+   if( unused )
+      printf("warning: %d scalars are unused\n",unused);
+
+   fclose( fh_sca );
+}
+
+
+//----------------------------------------------------------------------//
+//  DB_declare()
+//
+//  Declare a new variable or parameter.
+//----------------------------------------------------------------------//
 
 void DB_declare(void *sym)
 {
@@ -118,12 +266,12 @@ void DB_declare(void *sym)
    if( do_scalars ) 
       if( istype(sym,par) || istype(sym,var) )
          if( valu->n == 0 )
-            fprintf(fh_dec,"%s,dec\n",name);
+            saw_scalar(name,0,sca_dec);
          else
             {
             cart_build(valu);
             while( cur=cart_next() )
-               fprintf(fh_dec,"\"%s(%s)\",dec\n",name,slprint(cur));
+               saw_scalar(name,cur,sca_dec);
             }
 
    free(name);
@@ -132,6 +280,12 @@ void DB_declare(void *sym)
    freelist(attr);
 }
 
+
+//----------------------------------------------------------------------//
+//  DB_begin_block()
+//
+//  Begin an equation block
+//----------------------------------------------------------------------//
 
 void DB_begin_block(void *eq)
 {
@@ -164,11 +318,18 @@ void DB_begin_block(void *eq)
 }
 
 
+//----------------------------------------------------------------------//
+//  DB_show_symbol()
+//
+//  Show a parameter or variable.
+//----------------------------------------------------------------------//
+
 char *DB_show_symbol(char *str, List *sublist, Context context)
 {
    char buf[1024],*ptr;
    int i;
    char *side[2];
+   ScalarRef sop;
 
    *buf = '\0';
    side[0] = "rhs";
@@ -197,22 +358,27 @@ char *DB_show_symbol(char *str, List *sublist, Context context)
    //  write out scalar usage if needed
    //
 
+   sop = context.lhs ? sca_lhs : sca_rhs ;
+
    if( do_scalars )
-      if( sublist->n == 0 )
-         fprintf(fh_use,"%s,%s\n",str,side[context.lhs]);
+      if( sublist->n == 0 ) 
+         saw_scalar(str,0,sop);
       else
-         fprintf(fh_use,"\"%s(%s)\",%s\n",str,slprint(sublist),side[context.lhs]);
+         saw_scalar(str,sublist,sop);
 
    return ptr;
 }
 
+//----------------------------------------------------------------------//
+//  Debug_setup()
 //
 //  Connect up the public routines.
-//
+//----------------------------------------------------------------------//
 
 void Debug_setup(void)
 {
    lang_begin_file ( DB_begin_file  );
+   lang_end_file   ( DB_end_file    );
    lang_declare    ( DB_declare     );
    lang_begin_block( DB_begin_block ); 
    lang_show_symbol( DB_show_symbol );
