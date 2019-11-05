@@ -12,6 +12,7 @@
 #include "xmalloc.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define OBJ_entry 1272
 #define OBJ_table 1273
@@ -90,10 +91,9 @@ static int hash_code( Table *table, char *str )
  *
  *  Shim for using strcasecmp with qsort in getkeys
  *-------------------------------------------------------------------*/
-
-static int qcmp( char **s1, char **s2 )
+static int qcmp( const void *v1, const void *v2 )
 {
-   return strcasecmp( *s1, *s2 );
+   return strcasecmp( *(char **) v1, *(char **) v2 );
 }
 
 
@@ -300,7 +300,7 @@ List *getkeys( Table *tab )
    //  clean up and return
    //
 
-   free( keys_vec );
+   xfree( keys_vec );
 
    return keys_out;
 }

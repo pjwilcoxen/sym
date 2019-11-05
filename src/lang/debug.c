@@ -77,7 +77,7 @@ typedef enum {
 static void saw_scalar(char *name, void *subs, ScalarRef where) 
 {
    Scalar *cur;
-   char *fullname,*concat();
+   char *fullname;
 
    validate( name, 0, "saw_scalar" );
    
