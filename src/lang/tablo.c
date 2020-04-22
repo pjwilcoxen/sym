@@ -218,8 +218,8 @@ char *tablo_filename(enum har_type har)
    filename = "other";
 
    switch( har ) {
-      case h_aen: filename = "addend"  ; break ;
-      case h_aex: filename = "addexo"  ; break ;
+      case h_aen: filename = "impl"    ; break ;
+      case h_aex: filename = "impl"    ; break ;
       case h_apa: filename = "addpar"  ; break ;
       case h_int: filename = "inter"   ; break ;
       case h_kal: filename = "kalman"  ; break ;
