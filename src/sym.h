@@ -37,6 +37,7 @@ extern int mergeonly;
 extern int only_first;
 extern int only_last;
 extern int do_scalars;
+extern int do_calc;
 
 #define DBG ((debug && myDEBUG)||debugforce)
 

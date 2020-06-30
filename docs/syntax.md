@@ -114,11 +114,11 @@ Support GEMPACK's TABLO language.
   declarations. If present, it is used as the name of an HAR header
   and should have the form: c###.
 
- + Parameters are read from TABLO logical name 'param'. Variables
-   are read from one of the following files depending on the value
-   of the first letter of the header: B = 'base', K = 'kalman',
-   M = 'make', N = 'endog', and X = 'exog'. If the first letter does
-   not match one of the above 'base' will be used as the file name.
++ Parameters are read from TABLO logical name 'param'. Variables
+  are read from one of the following files depending on the value
+  of the first letter of the header: B = 'base', K = 'kalman',
+  M = 'make', N = 'endog', and X = 'exog'. If the first letter does
+  not match one of the above 'base' will be used as the file name.
 
 ### troll
 

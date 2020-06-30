@@ -39,9 +39,10 @@ int only_first=0;
 int only_last=0;
 int mergeonly=0;
 int do_scalars=0;
+int do_calc=0;
 
 char *usage   = "sym [options] <language> <symfile> <codefile>";
-char *options = "-version -d -dd -doc -first -last -scalars -syntax -merge_only";
+char *options = "-version -calc -d -dd -doc -first -last -scalars -syntax -merge_only";
 
 char *doc1 = "\
 Translates models from algebraic form into one of several programming\n\
@@ -62,6 +63,10 @@ Indicates the input model to be translated. Required.\n\
 The name that should be used for the resulting target-language file. Some\n\
 target languages will involve multiple files that will be based on this\n\
 name. Required.\n\
+\n\
+### Option -calc\n\
+Turn on calculator mode for target languages that support it. Calculator\n\
+mode is used for non-iterative calculations.\n\
 \n\
 ### Option -d\n\
 Turn on the most commonly used debugging messages.\n\
@@ -177,12 +182,13 @@ char *argv[];
       exit(0);
       }
 
+   if( isoption("calc"      ,1) )do_calc = 1;
    if( isoption("dd"        ,2) )debugforce = 1;
    if( isoption("d"         ,1) && !(isoption("debug",2) || isoption("dd",2)) )debug = 1;
    if( isoption("first"     ,1) )only_first = 1;
    if( isoption("last"      ,1) )only_last = 1;
-   if( isoption("merge_only",1) )mergeonly =1;
-   if( isoption("scalars"   ,2) )do_scalars =1;
+   if( isoption("merge_only",1) )mergeonly = 1;
+   if( isoption("scalars"   ,2) )do_scalars = 1;
 
    if( only_first && only_last )
       {

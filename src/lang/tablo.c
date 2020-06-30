@@ -16,11 +16,11 @@
 ..   declarations. If present, it is used as the name of an HAR header 
 ..   and should have the form: c###. 
 ..
-..  + Parameters are read from TABLO logical name 'param'. Variables
-..    are read from one of the following files depending on the value
-..    of the first letter of the header: B = 'base', K = 'kalman', 
-..    M = 'make', N = 'endog', and X = 'exog'. If the first letter does 
-..    not match one of the above 'base' will be used as the file name.
+.. + Parameters are read from TABLO logical name 'param'. Variables
+..   are read from one of the following files depending on the value
+..   of the first letter of the header: B = 'base', K = 'kalman', 
+..   M = 'make', N = 'endog', and X = 'exog'. If the first letter does 
+..   not match one of the above 'base' will be used as the file name.
  *--------------------------------------------------------------------*/
 
 #include "../assoc.h"
@@ -70,6 +70,7 @@ enum har_type {
    h_int, h_kal, h_mak, h_end,
    h_iot, h_par, h_ext, h_exo, 
    h_aen, h_aex, h_apa, h_unk };
+
 
 //----------------------------------------------------------------------//
 //  tabloset
@@ -202,6 +203,20 @@ enum har_type tablo_type(void *symbol)
    free(atts);
    return this;
 }
+
+
+//----------------------------------------------------------------------//
+//  tablo_show_symbol()
+//
+//  Return a value indicating whether the current symbol should be
+//  shown in the output file.
+//----------------------------------------------------------------------//
+static int tablo_show_symbol(void *symbol) 
+{
+   validate( symbol, SYMBOBJ, "tablo_show_symbol" );
+   return do_calc==0 || isused(symbol);
+}
+
 
 //----------------------------------------------------------------------//
 //  tablo_filename()
@@ -356,21 +371,22 @@ static void Tablo_writedecs()
    //
    
    for( cur=firstsymbol(par), n=0 ; cur ; cur=nextsymbol(cur), n++ )
-      {
-      name = symname(cur);
-      val  = symvalue(cur);
-      qual = tabloqualifier(val);
-      ref  = tablovar(name,val,0);
+      if( tablo_show_symbol(cur) )
+         {
+         name = symname(cur);
+         val  = symvalue(cur);
+         qual = tabloqualifier(val);
+         ref  = tablovar(name,val,0);
       
-      stmt = concat(4,"coefficient ",qual,ref," ;");
-      wrap_write(stmt,1,0);
-      free(stmt);
+         stmt = concat(4,"coefficient ",qual,ref," ;");
+         wrap_write(stmt,1,0);
+         free(stmt);
       
-      freelist(val);
-      free(name);
-      free(qual);
-      free(ref);
-      }
+         freelist(val);
+         free(name);
+         free(qual);
+         free(ref);
+         }
 
    if( n )fprintf(code,"\n");
    
@@ -381,27 +397,28 @@ static void Tablo_writedecs()
    if( n )fprintf(code,"file param ;\n\n");
 
    for( cur=firstsymbol(par), n=0 ; cur ; cur=nextsymbol(cur), n++ )
-      {
-      name = symname(cur);
-      val  = symvalue(cur);
-      qual = tabloqualifier(val);
-      ref  = tablovar(name,val,0);
+      if( tablo_show_symbol(cur) )
+         {
+         name = symname(cur);
+         val  = symvalue(cur);
+         qual = tabloqualifier(val);
+         ref  = tablovar(name,val,0);
 
-      atts = symattrib(cur);
-      if( atts->n == 1 )
-         strncpy(buf,atts->first->str,10);
-      else
-         sprintf(buf,"H%3.3d",hdr++);
+         atts = symattrib(cur);
+         if( atts->n == 1 )
+            strncpy(buf,atts->first->str,10);
+         else
+            sprintf(buf,"H%3.3d",hdr++);
 
-      stmt = concat(7,"read ",qual,"\n   ",ref," from file param header \"",buf,"\" ;");
-      wrap_write(stmt,1,0);
-      free(stmt);
+         stmt = concat(7,"read ",qual,"\n   ",ref," from file param header \"",buf,"\" ;");
+         wrap_write(stmt,1,0);
+         free(stmt);
       
-      free(name);
-      freelist(val);
-      free(qual);
-      free(ref);
-      }
+         free(name);
+         freelist(val);
+         free(qual);
+         free(ref);
+         }
 
    if( n )fprintf(code,"\n");
 
@@ -411,24 +428,29 @@ static void Tablo_writedecs()
    // 
    
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
-      {
-      name = symname(cur);
-      val  = symvalue(cur);
-      qual = tabloqualifier(val);
-      ref  = tablovar(name,val,0);
+      if( tablo_show_symbol(cur) )
+         {
+         name = symname(cur);
+         val  = symvalue(cur);
+         qual = tabloqualifier(val);
+         ref  = tablovar(name,val,0);
       
-      stmt = concat(4,"variable ",qual,ref," ;");
-      wrap_write(stmt,1,0);
-      free(stmt);
+         if( do_calc == 0 )
+            stmt = concat(4,"variable ",qual,ref," ;");
+         else
+            stmt = concat(4,"coefficient ",qual,ref," ;");
 
-      filename = tablo_filename(tablo_type(cur));
-      addlist(files,filename);
+         wrap_write(stmt,1,0);
+         free(stmt);
+
+         filename = tablo_filename(tablo_type(cur));
+         addlist(files,filename);
       
-      free(name);
-      freelist(val);
-      free(qual);
-      free(ref);
-      }
+         free(name);
+         freelist(val);
+         free(qual);
+         free(ref);
+         }
 
    //
    //  write out declarations of logical file names
@@ -447,28 +469,29 @@ static void Tablo_writedecs()
    //
 
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
-      {
-      name = symname(cur);
-      val  = symvalue(cur);
-      qual = tabloqualifier(val);
-      ref  = tablovar(name,val,0);
+      if( tablo_show_symbol(cur) )
+         {
+         name = symname(cur);
+         val  = symvalue(cur);
+         qual = tabloqualifier(val);
+         ref  = tablovar(name,val,0);
       
-      atts = symattrib(cur);
-      filename = tablo_filename(tablo_type(cur));
-      if( atts->n == 1 ) 
-         strncpy(buf,atts->first->str,10);
-      else 
-         sprintf(buf,"H%3.3d",hdr++);
+         atts = symattrib(cur);
+         filename = tablo_filename(tablo_type(cur));
+         if( atts->n == 1 ) 
+            strncpy(buf,atts->first->str,10);
+         else 
+            sprintf(buf,"H%3.3d",hdr++);
 
-      stmt = concat(9,"read ",qual,"\n   ",ref," from file ",filename," header \"",buf,"\" ;");
-      wrap_write(stmt,1,0);
-      free(stmt);
+         stmt = concat(9,"read ",qual,"\n   ",ref," from file ",filename," header \"",buf,"\" ;");
+         wrap_write(stmt,1,0);
+         free(stmt);
       
-      free(name);
-      freelist(val);
-      free(qual);
-      free(ref);
-      }
+         free(name);
+         freelist(val);
+         free(qual);
+         free(ref);
+         }
 
 }
 
@@ -620,6 +643,7 @@ void Tablo_begin_block(void *eq)
    char *qual;
    List *eqnsets();
    char *name,*eqname();
+   char tbuf[10];
    
    if( Tablo_eqn == 0 )
       Tablo_writedecs();
@@ -629,10 +653,22 @@ void Tablo_begin_block(void *eq)
 
    qual = tabloqualifier(eqnsets(eq));
    name = eqname(eq);
-   if( name )
-      fprintf(code,"\nequation %s %s\n   ",name,qual);
+
+   if( do_calc == 0 )
+      if( name )
+         fprintf(code,"\nequation %s %s\n   ",name,qual);
+      else
+         fprintf(code,"\nequation EQN%d %s\n   ",Tablo_eqn,qual);
    else
-      fprintf(code,"\nequation EQN%d %s\n   ",Tablo_eqn,qual);
+      {
+      if( islvalue(eq)==0 )
+         {
+         sprintf(tbuf,"%d",Tablo_eqn);
+         tablo_error("LHS of equation %s in calc mode is not a variable",tbuf);
+         }
+      fprintf(code,"\nformula %s\n   ",qual);
+      }
+
    free(qual);
 }
 

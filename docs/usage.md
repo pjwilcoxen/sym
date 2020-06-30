@@ -7,7 +7,7 @@ languages.
     sym [options] <language> <symfile> <codefile>
 
 ## Options:
-    -version -d -dd -doc -first -last -scalars -syntax -merge_only
+    -version -calc -d -dd -doc -first -last -scalars -syntax -merge_only
 
 ## Languages:
     -debug -html -msgproc -oxgs -oxgst -oxnewton -tablo -troll 
@@ -26,6 +26,10 @@ Indicates the input model to be translated. Required.
 The name that should be used for the resulting target-language file. Some
 target languages will involve multiple files that will be based on this
 name. Required.
+
+### Option -calc
+Turn on calculator mode for target languages that support it. Calculator
+mode is used for non-iterative calculations.
 
 ### Option -d
 Turn on the most commonly used debugging messages.
@@ -59,4 +63,4 @@ notes about rules appling to specific target languages.
 Print detailed information about the versions of the main
 program and the individual language support modules.
 
-Sym v2.9.1 build 918 (2020/04/23)
+Sym v2.9.1 build 924 (2020/06/30)
