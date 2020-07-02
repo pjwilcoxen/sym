@@ -219,6 +219,32 @@ static int tablo_show_symbol(void *symbol)
 
 
 //----------------------------------------------------------------------//
+//  tablo_mark_used_sets()
+//
+//  Mark all sets actually used by parameters or variables.
+//----------------------------------------------------------------------//
+static void tablo_mark_used_sets(Symboltype kind)
+{
+   Element *cur;
+   Tabset *cts;
+   Item *curset,*supset;
+   List *sups;
+   void setused();
+
+   for( cur=firstsymbol(kind) ; cur ; cur=nextsymbol(cur) )
+      if( tablo_show_symbol(cur) )
+         for( curset=symvalue(cur)->first ; curset ; curset=curset->next )
+            {
+            setused(lookup(curset->str),0,0);
+            sups = find_immediate_sups(curset->str);
+            if( sups->n )
+               for( supset=sups->first ; supset ; supset=supset->next )
+                  setused(lookup(supset->str),0,0);
+            }
+}
+
+
+//----------------------------------------------------------------------//
 //  tablo_filename()
 //
 //  Return a string with the logical Tablo file name to be used
@@ -328,20 +354,24 @@ static void Tablo_writedecs()
    //  write out sets
    //
    
-   for( cur=firstsymbol(set), n=0 ; cur ; cur=nextsymbol(cur), n++ )
-      {
-      name = symname(cur);
-      val  = symvalue(cur);
-      cts = (Tabset *) getvalue(tabsets,name);
-      
-      iqual = cts->istime ? "(intertemporal) " : "" ;
-      stmt  = concat(6,"set ",iqual,name," (",slprint(val),") ;"); 
-      wrap_write(stmt,1,1);
-      free(stmt);
+   tablo_mark_used_sets(par);
+   tablo_mark_used_sets(var);
 
-      freelist(val);
-      free(name);
-      }
+   for( cur=firstsymbol(set), n=0 ; cur ; cur=nextsymbol(cur), n++ )
+      if( tablo_show_symbol(cur) )
+         {
+         name = symname(cur);
+         val  = symvalue(cur);
+         cts = (Tabset *) getvalue(tabsets,name);
+      
+         iqual = cts->istime ? "(intertemporal) " : "" ;
+         stmt  = concat(6,"set ",iqual,name," (",slprint(val),") ;"); 
+         wrap_write(stmt,1,1);
+         free(stmt);
+
+         freelist(val);
+         free(name);
+         }
 
    if( n )fprintf(code,"\n");
    
@@ -350,19 +380,20 @@ static void Tablo_writedecs()
    //
    
    for( cur=firstsymbol(set), n=0 ; cur ; cur=nextsymbol(cur) )
-      {
-      List *sups;
-      Item *c;
-      name = symname(cur);
-      sups = find_immediate_sups( name );
-      if( sups->n )
-         for( c=sups->first ; c ; c=c->next )
-            {
-            fprintf(code,"subset %s is subset of %s ;\n",name,c->str);
-            n++;
-            }
-      free(name);
-      }
+      if( tablo_show_symbol(cur) )
+         {
+         List *sups;
+         Item *c;
+         name = symname(cur);
+         sups = find_immediate_sups( name );
+         if( sups->n )
+            for( c=sups->first ; c ; c=c->next )
+               {
+               fprintf(code,"subset %s is subset of %s ;\n",name,c->str);
+               n++;
+               }
+         free(name);
+         }
 
    if( n )fprintf(code,"\n");
    
