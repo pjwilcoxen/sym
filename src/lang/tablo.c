@@ -219,6 +219,27 @@ static int tablo_show_symbol(void *symbol)
 
 
 //----------------------------------------------------------------------//
+//  tablo_set_used()
+//
+//  Mark a set and all of its supersets as used.
+//----------------------------------------------------------------------//
+static void tablo_set_used(char *name)
+{
+   List *sups;
+   Item *supset;
+   void setused();
+
+   setused(lookup(name),0,0);
+
+   sups = find_immediate_sups(name);
+   if( sups->n == 0)return;
+
+   for( supset=sups->first ; supset ; supset=supset->next )
+      tablo_set_used(supset->str);
+ }
+
+
+//----------------------------------------------------------------------//
 //  tablo_mark_used_sets()
 //
 //  Mark all sets actually used by parameters or variables.
@@ -226,21 +247,12 @@ static int tablo_show_symbol(void *symbol)
 static void tablo_mark_used_sets(Symboltype kind)
 {
    Element *cur;
-   Tabset *cts;
-   Item *curset,*supset;
-   List *sups;
-   void setused();
+   Item *curset;
 
    for( cur=firstsymbol(kind) ; cur ; cur=nextsymbol(cur) )
       if( tablo_show_symbol(cur) )
          for( curset=symvalue(cur)->first ; curset ; curset=curset->next )
-            {
-            setused(lookup(curset->str),0,0);
-            sups = find_immediate_sups(curset->str);
-            if( sups->n )
-               for( supset=sups->first ; supset ; supset=supset->next )
-                  setused(lookup(supset->str),0,0);
-            }
+            tablo_set_used(curset->str) ;
 }
 
 
