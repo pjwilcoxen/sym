@@ -3,23 +3,23 @@
  *  Dec 04 (PJW)
  *--------------------------------------------------------------------*
 .. ### tablo
-.. 
+..
 .. Support GEMPACK's TABLO language.
 ..
-.. + All variables are implicitly subscripted by time. However, 
+.. + All variables are implicitly subscripted by time. However,
 ..   parameters are not.
 ..
-.. + The left side of an equation may be an expression, not just a 
+.. + The left side of an equation may be an expression, not just a
 ..   variable name.
 ..
-.. + At most one attribute is allowed in variable and parameter 
-..   declarations. If present, it is used as the name of an HAR header 
-..   and should have the form: c###. 
+.. + At most one attribute is allowed in variable and parameter
+..   declarations. If present, it is used as the name of an HAR header
+..   and should have the form: c###.
 ..
 .. + Parameters are read from TABLO logical name 'param'. Variables
 ..   are read from one of the following files depending on the value
-..   of the first letter of the header: B = 'base', K = 'kalman', 
-..   M = 'make', N = 'endog', and X = 'exog'. If the first letter does 
+..   of the first letter of the header: B = 'base', K = 'kalman',
+..   M = 'make', N = 'endog', and X = 'exog'. If the first letter does
 ..   not match one of the above 'base' will be used as the file name.
  *--------------------------------------------------------------------*/
 
@@ -41,7 +41,7 @@
 
 char *getsupset(char*);
 
-// 
+//
 //  Flag for checking local Tablo objects for corruption
 //
 
@@ -60,16 +60,30 @@ struct tabset {
 typedef struct tabset Tabset;
 
 Array *tabsets=0;
+List *calcvars=0;
 
 static int Tablo_eqn=0;
 static int Tablo_var=0;
 static int Tablo_par=0;
 static int Tablo_scalar_eqn=0;
 
-enum har_type { 
+enum har_type {
    h_int, h_kal, h_mak, h_end,
-   h_iot, h_par, h_ext, h_exo, 
+   h_iot, h_par, h_ext, h_exo,
    h_aen, h_aex, h_apa, h_unk };
+
+
+//----------------------------------------------------------------------//
+//  tablo_error()
+//
+//  Print an error message and crash.  Use this routine instead of
+//  fatal_error in order to indicate that the problem was with the
+//  Tablo back end.
+//----------------------------------------------------------------------//
+static void tablo_error(char *fmt, char *str)
+{
+   show_error("Fatal Error Writing Tablo File",fmt,str);
+}
 
 
 //----------------------------------------------------------------------//
@@ -81,18 +95,18 @@ static void tabloset(char *name)
 {
    static struct tabset *new;
    char abb[2];
-   
+
    abb[0] = *name;
    abb[1] = '\0';
-   
+
    new = (Tabset *) malloc( sizeof(Tabset) );
    new->obj    = MYOBJ;
    new->index  = strdup(abb);
    new->istime = 0;
-   
+
    if( isequal(name,"time") || issubset(name,"time") )
       new->istime = 1;
-   
+
    if( tabsets==0 )tabsets = newarray();
    addvalue(tabsets,name,new);
 }
@@ -110,7 +124,7 @@ static char *tablovar(char *name, List *sets, int dt)
    Tabset *cur;
    char *result;
    char tbuf[10];
-   
+
    validate( tabsets, ARRAYOBJ, "tablovar" );
    if( name==0 )FAULT("null pointer passed to tablovar");
 
@@ -138,7 +152,7 @@ static char *tablovar(char *name, List *sets, int dt)
       else
          addlist(indexes,cur->index);
       }
-      
+
    result = concat(4,name,"(",slprint(indexes),")");
    freelist(indexes);
    return result;
@@ -178,7 +192,7 @@ static char *tabloqualifier(List *sets)
 //  Return an enum indicating what type of header was associated with
 //  a given variable or parameter.
 //----------------------------------------------------------------------//
-enum har_type tablo_type(void *symbol) 
+enum har_type tablo_type(void *symbol)
 {
    List *atts;
    enum har_type this;
@@ -211,12 +225,28 @@ enum har_type tablo_type(void *symbol)
 //  Return a value indicating whether the current symbol should be
 //  shown in the output file.
 //----------------------------------------------------------------------//
-static int tablo_show_symbol(void *symbol) 
+static int tablo_show_symbol(void *symbol)
 {
    validate( symbol, SYMBOBJ, "tablo_show_symbol" );
    return do_calc==0 || isused(symbol);
 }
 
+
+//----------------------------------------------------------------------//
+//  tablo_need_read()
+//
+//  Return a value indicating whether a read statement is needed
+//  for a given symbol.
+//----------------------------------------------------------------------//
+static int tablo_need_read(void *symbol)
+{
+   validate( symbol, SYMBOBJ, "tablo_need_read" );
+   if( do_calc )
+      return isrhs(symbol) && symattrib(symbol)->n > 0 ;
+   if( symattrib(symbol)->n < 1 )
+      tablo_error("Header required for symbol: %s",symname(symbol));
+   return 1 ;
+}
 
 //----------------------------------------------------------------------//
 //  tablo_set_used()
@@ -261,10 +291,10 @@ static void tablo_mark_used_sets(Symboltype kind)
 //
 //  Return a string with the logical Tablo file name to be used
 //  for reading and writing a given symbol. If no header has been
-//  specified, or if the initial letter of the header is not in 
+//  specified, or if the initial letter of the header is not in
 //  the usual list, return "other".
 //----------------------------------------------------------------------//
-char *tablo_filename(enum har_type har) 
+char *tablo_filename(enum har_type har)
 {
    char *filename;
 
@@ -285,19 +315,6 @@ char *tablo_filename(enum har_type har)
       }
 
    return filename;
-}
-
-
-//----------------------------------------------------------------------//
-//  tablo_error()
-//
-//  Print an error message and crash.  Use this routine instead of
-//  fatal_error in order to indicate that the problem was with the
-//  Tablo back end.
-//----------------------------------------------------------------------//
-void tablo_error(char *fmt, char *str)
-{
-   show_error("Fatal Error Writing Tablo File",fmt,str);
 }
 
 
@@ -361,11 +378,11 @@ static void Tablo_writedecs()
          }
       sofar = freelist(sofar);
       }
-      
+
    //
    //  write out sets
    //
-   
+
    tablo_mark_used_sets(par);
    tablo_mark_used_sets(var);
 
@@ -375,9 +392,9 @@ static void Tablo_writedecs()
          name = symname(cur);
          val  = symvalue(cur);
          cts = (Tabset *) getvalue(tabsets,name);
-      
+
          iqual = cts->istime ? "(intertemporal) " : "" ;
-         stmt  = concat(6,"set ",iqual,name," (",slprint(val),") ;"); 
+         stmt  = concat(6,"set ",iqual,name," (",slprint(val),") ;");
          wrap_write(stmt,1,1);
          free(stmt);
 
@@ -386,11 +403,11 @@ static void Tablo_writedecs()
          }
 
    if( n )fprintf(code,"\n");
-   
-   // 
+
+   //
    //  write out subset statements
    //
-   
+
    for( cur=firstsymbol(set), n=0 ; cur ; cur=nextsymbol(cur) )
       if( tablo_show_symbol(cur) )
          {
@@ -408,11 +425,11 @@ static void Tablo_writedecs()
          }
 
    if( n )fprintf(code,"\n");
-   
+
    //
    //  write coefficient declarations
    //
-   
+
    for( cur=firstsymbol(par), n=0 ; cur ; cur=nextsymbol(cur), n++ )
       if( tablo_show_symbol(cur) )
          {
@@ -420,11 +437,11 @@ static void Tablo_writedecs()
          val  = symvalue(cur);
          qual = tabloqualifier(val);
          ref  = tablovar(name,val,0);
-      
+
          stmt = concat(4,"coefficient ",qual,ref," ;");
          wrap_write(stmt,1,0);
          free(stmt);
-      
+
          freelist(val);
          free(name);
          free(qual);
@@ -432,12 +449,14 @@ static void Tablo_writedecs()
          }
 
    if( n )fprintf(code,"\n");
-   
+
    //
-   //  write out some placeholder read statements
+   //  write out read statements for parameters
    //
 
-   if( n )fprintf(code,"file param ;\n\n");
+   if( n )
+      if( firstsymbol(par) )
+         fprintf(code,"file param ;\n\n");
 
    for( cur=firstsymbol(par), n=0 ; cur ; cur=nextsymbol(cur), n++ )
       if( tablo_show_symbol(cur) )
@@ -456,7 +475,7 @@ static void Tablo_writedecs()
          stmt = concat(7,"read ",qual,"\n   ",ref," from file param header \"",buf,"\" ;");
          wrap_write(stmt,1,0);
          free(stmt);
-      
+
          free(name);
          freelist(val);
          free(qual);
@@ -468,8 +487,8 @@ static void Tablo_writedecs()
    //
    //  write out variable statements; keep track of which files
    //  we'll need along the way
-   // 
-   
+   //
+
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
       if( tablo_show_symbol(cur) )
          {
@@ -477,7 +496,7 @@ static void Tablo_writedecs()
          val  = symvalue(cur);
          qual = tabloqualifier(val);
          ref  = tablovar(name,val,0);
-      
+
          if( do_calc == 0 )
             stmt = concat(4,"variable ",qual,ref," ;");
          else
@@ -487,8 +506,9 @@ static void Tablo_writedecs()
          free(stmt);
 
          filename = tablo_filename(tablo_type(cur));
-         addlist(files,filename);
-      
+         if( tablo_need_read(cur) )
+            addlist(files,filename);
+
          free(name);
          freelist(val);
          free(qual);
@@ -500,7 +520,7 @@ static void Tablo_writedecs()
    //
 
    fprintf(code,"\n");
-   if( files->n ) 
+   if( files->n )
       {
       for( itm=files->first ; itm ; itm=itm->next )
          fprintf(code,"file %s ;\n",itm->str);
@@ -512,24 +532,21 @@ static void Tablo_writedecs()
    //
 
    for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
-      if( tablo_show_symbol(cur) )
+      if( tablo_show_symbol(cur) && tablo_need_read(cur) )
          {
          name = symname(cur);
          val  = symvalue(cur);
          qual = tabloqualifier(val);
          ref  = tablovar(name,val,0);
-      
+
          atts = symattrib(cur);
          filename = tablo_filename(tablo_type(cur));
-         if( atts->n == 1 ) 
-            strncpy(buf,atts->first->str,10);
-         else 
-            sprintf(buf,"H%3.3d",hdr++);
+         strncpy(buf,atts->first->str,10);
 
          stmt = concat(9,"read ",qual,"\n   ",ref," from file ",filename," header \"",buf,"\" ;");
          wrap_write(stmt,1,0);
          free(stmt);
-      
+
          free(name);
          freelist(val);
          free(qual);
@@ -554,7 +571,10 @@ void Tablo_begin_file(char *basename)
       fprintf(code,"variable    (default=levels)       ;\n");
       }
    else
+      {
       fprintf(code,"formula     (default=initial)      ;\n");
+      calcvars = newlist();
+      }
 
    fprintf(code,"coefficient (default=parameter)    ;\n");
    fprintf(code,"\n");
@@ -576,21 +596,56 @@ void Tablo_end_file()
    int i,n,nv_end,nv_exo,nv_unk,nv_tot;
    enum har_type har;
    int ndiff;
+   Item *itm;
+   List *val;
+   char *qual,*ref;
+   char buf[10];
+   char *stmt;
 
    //
    //  count unused variables and scalar variables of each type
    //
-   
-   for( i=0 ; i<=h_unk ; i++) 
+
+   for( i=0 ; i<=h_unk ; i++)
       nv[i] = 0;
 
    ucount = 0;
-   for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) ) 
+   for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
       if( !isused(cur) )
          ucount++;
       else {
          har = tablo_type(cur);
          nv[har] += symsize(cur);
+      }
+
+   //
+   //  if we're in calc mode then add some write statements
+   //
+
+   if( do_calc )
+      {
+
+      fprintf(code,"\nfile (new) calc ;\n\n");
+
+      validate( calcvars, LISTOBJ, "Tablo_end_file" );
+      for( itm=calcvars->first ; itm ; itm=itm->next )
+         {
+         cur  = lookup(itm->str);
+         val  = symvalue(cur);
+         qual = tabloqualifier(val);
+         ref  = tablovar(itm->str,val,0);
+         atts = symattrib(cur) ;
+         if( atts->n == 1 )
+            {
+            strncpy(buf,atts->first->str,10);
+            stmt = concat(7,"write ",qual,"\n   ",ref," to file calc header \"",buf,"\" ;\n");
+            wrap_write(stmt,1,0);
+            free(stmt);
+            }
+         }
+
+      fprintf(code,"\n");
+
       }
 
    //
@@ -602,7 +657,7 @@ void Tablo_end_file()
    fprintf(info,"   Variables, Used: %d\n",Tablo_var-ucount);
    fprintf(info,"   Variables, Unused: %d\n",ucount);
    fprintf(info,"   Parameters: %d\n",Tablo_par);
-   
+
    fprintf(info,"\nTime information:\n");
    fprintf(info,"\n   Periods used: %d\n",setsize("time"));
 
@@ -668,14 +723,14 @@ void Tablo_end_file()
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_kal),nv[h_kal]);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_mak),nv[h_mak]);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_aex),nv[h_aex]);
-   
+
    fprintf(info,"\n   Undetermined variables: %d\n",nv_unk);
    fprintf(info,"      Type %s: %d\n",tablo_filename(h_unk),nv[h_unk]);
-   
-   for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) ) 
-      if( isused(cur) && tablo_type(cur) == h_unk ) 
+
+   for( cur=firstsymbol(var) ; cur ; cur=nextsymbol(cur) )
+      if( isused(cur) && tablo_type(cur) == h_unk )
          fprintf(info,"      %-13s: %d\n",symname(cur),symsize(cur));
-   
+
    if( nv_tot != (nv_end + nv_exo + nv_unk) )
       fprintf(info,"\nWarning: inconsistent variable count\n");
 
@@ -693,7 +748,8 @@ void Tablo_begin_block(void *eq)
    List *eqnsets();
    char *name,*eqname();
    char tbuf[10];
-   
+   Node *getlhs();
+
    if( Tablo_eqn == 0 )
       Tablo_writedecs();
 
@@ -715,7 +771,12 @@ void Tablo_begin_block(void *eq)
          sprintf(tbuf,"%d",Tablo_eqn);
          tablo_error("LHS of equation %s in calc mode is not a variable",tbuf);
          }
-      fprintf(code,"\nformula %s\n   ",qual);
+      else
+         {
+         fprintf(code,"\nformula %s\n   ",qual);
+         validate( calcvars, LISTOBJ, "Tablo_bgn_block" );
+         addlist(calcvars, getlhs(eq)->str);
+         }
       }
 
    free(qual);
@@ -738,33 +799,33 @@ void Tablo_end_eqn(void *eq)
 //----------------------------------------------------------------------//
 //
 //  Begin a function
-//  
+//
 //----------------------------------------------------------------------//
 
 char *Tablo_begin_func(char *func, char *arg)
 {
    Tabset *cur;
-   
+
    if( isequal(func,"sum") || isequal(func,"prod") )
       {
       cur = (Tabset *) getvalue(tabsets,arg);
       if( cur==0 )FAULT("null pointer in Tablo_begin_func");
       return concat(6,func,"(",cur->index,",",arg,",");
       }
-      
+
    if( arg )
       FAULT("unexpected function call in Tablo_begin_func");
 
    if( isequal(func,"log") )
       return strdup("loge(");
-      
-   return concat(2,func,"("); 
+
+   return concat(2,func,"(");
 }
 
 //----------------------------------------------------------------------//
 //
 //  Show a symbol
-//  
+//
 //----------------------------------------------------------------------//
 
 char *Tablo_show_symbol(char *str, List *setlist, Context context)
@@ -776,22 +837,22 @@ char *Tablo_show_symbol(char *str, List *setlist, Context context)
 //----------------------------------------------------------------------//
 //
 //  Connect up public routines
-//  
+//
 //----------------------------------------------------------------------//
 
 void Tablo_setup(void)
 {
-   lang_begin_file ( Tablo_begin_file  ); 
+   lang_begin_file ( Tablo_begin_file  );
    lang_end_file   ( Tablo_end_file    );
-   lang_declare    ( Tablo_declare     ); 
-   lang_begin_block( Tablo_begin_block ); 
-   lang_end_eqn    ( Tablo_end_eqn     ); 
+   lang_declare    ( Tablo_declare     );
+   lang_begin_block( Tablo_begin_block );
+   lang_end_eqn    ( Tablo_end_eqn     );
    lang_begin_func ( Tablo_begin_func  );
    lang_show_symbol( Tablo_show_symbol );
 
    set_eqn_vector();
    set_sum_vector();
-   
+
    set_line_length(75);
    set_alpha_elements();
    set_explicit_time();

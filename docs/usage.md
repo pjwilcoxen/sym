@@ -63,4 +63,4 @@ notes about rules appling to specific target languages.
 Print detailed information about the versions of the main
 program and the individual language support modules.
 
-Sym v2.9.2 build 933 (2020/07/06)
+Sym v2.9.3 build 964 (2020/07/06)
