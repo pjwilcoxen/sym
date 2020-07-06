@@ -520,3 +520,32 @@ char *symall(void *sym)
    freelist(merged);
    return str;
 }
+
+
+/*-------------------------------------------------------------------*
+ *  islhs
+ *
+ *  Is a symbol used on an LHS?
+ *-------------------------------------------------------------------*/
+int islhs(void *sym)
+{
+   if( sym==0 )return 0;
+   validate( sym, SYMBOBJ, "islhs" );
+   return ((Symbol *)sym)->leqns->n > 0;
+}
+
+
+/*-------------------------------------------------------------------*
+ *  isrhs
+ *
+ *  Is a symbol used on an RHS?
+ *-------------------------------------------------------------------*/
+int isrhs(void *sym)
+{
+   if( sym==0 )return 0;
+   validate( sym, SYMBOBJ, "isrhs" );
+   return ((Symbol *)sym)->reqns->n > 0;
+}
+
+
+

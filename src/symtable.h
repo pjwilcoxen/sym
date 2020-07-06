@@ -26,6 +26,8 @@ char* symname(void *);
 char* symuse(void *);
 int   isattrib(void*,char*);
 int   isident(void*);
+int   islhs(void*);
+int   isrhs(void*);
 int   istype(void*,Symboltype);
 int   isused(void*);
 int   symsize(void*);
