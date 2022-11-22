@@ -21,6 +21,8 @@ OBJ  = o
 EXE  = sym.exe
 EOPT = -o $(EXE)
 OPT  = -g
+# Geoff Shuetrim 2022-11-22 Added YACC so we can use byacc or yacc.
+YACC = byacc
 
 ifeq ($(TAR),gcc)
    CC = gcc
@@ -122,7 +124,7 @@ build.h : $(OBJS) $(LANGS) sym.c sym.h version.h
 #
 
 parse.c : parse.y 
-	byacc -o parse.c parse.y
+	$(YACC) -o parse.c parse.y
 
 syntax.c : parse.y
 	perl makesyntax.p
