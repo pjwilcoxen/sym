@@ -117,14 +117,16 @@ extern char *strdup();
 //  Flag for checking local MSGPROCPYTHON objects for corruption
 //
 
-#define MSGVAROBJ 3001
+// Geoff Shuetrim 2022-11-22 Changed name and value to differentiate from MSGVAROBJ.
+// Value was equal to 3001.
+#define PYTHONVAROBJ 4001
 
 //
 //  Subscript origin for output array references
 //
 
 // GCS 2022-11-22 Changed from 1 to 0 to alter array indexing to Python conventions.
-#define MSG_ORIGIN 0
+#define PYTHON_ORIGIN 0
 
 //
 //  Internal variables
@@ -186,7 +188,7 @@ struct vartype_info
    int vecid[6];
 };
 
-struct vartype_info vlist[] =
+static struct vartype_info vlist[] =
     {
         {"end", 0, Z1L, 0, 0, Z1R, 0},
         {"ets", 0, ZEL, 0, 0, ZER, EXZ},
@@ -205,11 +207,11 @@ struct vartype_info vlist[] =
 //  in the vars.csv file.  It is used for variables that are normalized
 //  relative to US rather than own GDP.
 
-char *units[] =
+static char *units[] =
     {"del", "pct", "gdp", "usgdp", "cent", "gwh", "gwhgdp",
      "btu", "mmt", "btugdp", "mmtgdp", "btuusgdp", "mmtusgdp", 0};
 
-char *us_units[] =
+static char *us_units[] =
     {"usgdp", "btuusgdp", "mmtusgdp", "gwhusgdp", 0};
 
 //
@@ -218,16 +220,16 @@ char *us_units[] =
 //  If these are not present in the input file, setup_pythonname
 //  will crash.
 
-char *setname_regions = "regions";
-char *setname_sectors = "sectors";
-char *setname_goods = "goods";
+static char *setname_regions = "regions";
+static char *setname_sectors = "sectors";
+static char *setname_goods = "goods";
 
 //
 //  US region code.  Ugly hack: really should be handled via
 //  syntax in the sym file.
 //
 
-char *USA_CODE = "UU";
+static char *USA_CODE = "UU";
 
 //
 //  Rules for translating between new and old notation in the
@@ -281,8 +283,8 @@ static Variable *v_head = 0;
 //  Function prototypes
 //----------------------------------------------------------------------//
 
-char *get_msgname(char *, List *, Context);
-void msg_error(char *, char *);
+static char *get_msgname(char *, List *, Context);
+static void msg_error(char *, char *);
 static void write_pythonname(FILE *, Variable *, List *);
 
 //----------------------------------------------------------------------//
@@ -307,7 +309,7 @@ void msg_error(char *fmt, char *str)
 //  of the subscript sets.
 //----------------------------------------------------------------------//
 
-void write_varmap(Variable *thisvar, List *setlist)
+static void write_varmap(Variable *thisvar, List *setlist)
 {
    Context mycontext;
    List *cur;
@@ -367,7 +369,7 @@ void write_varmap(Variable *thisvar, List *setlist)
 //  by cart_build().
 //----------------------------------------------------------------------//
 
-void write_vars(Variable *thisvar, List *setlist, char *desc)
+static void write_vars(Variable *thisvar, List *setlist, char *desc)
 {
    List *cur;
    Item *sub;
@@ -442,7 +444,7 @@ void write_vars(Variable *thisvar, List *setlist, char *desc)
 //  the context in which it appears.
 //----------------------------------------------------------------------//
 
-char *get_msgname(char *str, List *sublist, Context context)
+static char *get_msgname(char *str, List *sublist, Context context)
 {
    int sel = 1;
    int vecid;
@@ -456,7 +458,7 @@ char *get_msgname(char *str, List *sublist, Context context)
 
    for (var = v_head; var; var = var->next)
    {
-      validate(var, MSGVAROBJ, "get_msgname");
+      validate(var, PYTHONVAROBJ, "get_msgname");
 
       check = strcasecmp(str, var->str);
       if (check == 0)
@@ -811,7 +813,7 @@ void PYTHON_begin_file(char *basename)
    free(fname);
 
    for (i = NUL; i <= UNK; i++)
-      vecinfo[i] = MSG_ORIGIN;
+      vecinfo[i] = PYTHON_ORIGIN;
 
    vecname[NUL] = "";
    vecname[Z1L] = "z1l";
@@ -852,7 +854,7 @@ void PYTHON_end_file()
    fclose(optmap);
 
    ecount = MSGPROC_scalar - 1;
-   vcount = vecinfo[Z1L] + vecinfo[ZEL] + vecinfo[J1L] + vecinfo[X1L] - 4 * MSG_ORIGIN;
+   vcount = vecinfo[Z1L] + vecinfo[ZEL] + vecinfo[J1L] + vecinfo[X1L] - 4 * PYTHON_ORIGIN;
 
    fprintf(info, "\nLength of MSGPROC Vectors:\n\n");
    for (i = NUL + 1; i < UNK; i++)
@@ -867,7 +869,7 @@ void PYTHON_end_file()
          break;
 
       default:
-         fprintf(info, "   %s has %d elements\n", vecname[i], vecinfo[i] - MSG_ORIGIN);
+         fprintf(info, "   %s has %d elements\n", vecname[i], vecinfo[i] - PYTHON_ORIGIN);
       }
 
    //
@@ -932,7 +934,7 @@ void PYTHON_declare(void *sym)
       FAULT("Symbol has no element count in PYTHON_declare");
 
    newvar = (Variable *)malloc(sizeof(Variable));
-   newvar->obj = MSGVAROBJ;
+   newvar->obj = PYTHONVAROBJ;
    newvar->str = name;
    newvar->next = 0;
 
@@ -1230,18 +1232,18 @@ void PYTHON_begin_block(void *eq)
 
    esets = eqnsets(eq);
 
-   fprintf(code, "# Equation block %d\n", nblk);
+   fprintf(code, "    # Equation block %d\n", nblk);
 
    if (islvalue(eq) == 0)
       msg_error("%s", "LHS of an equation is not a variable");
 
    if (esets->n)
-      fprintf(code, "#    Defined over sets (%s)\n", slprint(esets));
+      fprintf(code, "    #    Defined over sets (%s)\n", slprint(esets));
 
    if (nscalar)
-      fprintf(code, "#    Scalar equations %d-%d (%d total)\n\n", nstart, nend, nscalar);
+      fprintf(code, "    #    Scalar equations %d-%d (%d total)\n\n", nstart, nend, nscalar);
    else
-      fprintf(code, "#    Contains undeclared symbols\n");
+      fprintf(code, "    #    Contains undeclared symbols\n");
 }
 
 //----------------------------------------------------------------------//
@@ -1264,6 +1266,30 @@ char *PYTHON_show_symbol(char *str, List *sublist, Context context)
 
 //----------------------------------------------------------------------//
 //
+//  Ensure the equation is indented by 4 spaces
+//  to conform to Python meaningful
+//  indentation rules so the equation
+//  is part of the msgproc function.
+//
+//----------------------------------------------------------------------//
+
+void PYTHON_begin_eqn(void *eq)
+{
+   fprintf(code, "    ");
+}
+
+//----------------------------------------------------------------------//
+//
+//  Leave out the semicolon at the end of the equation - this is Python.
+//
+//----------------------------------------------------------------------//
+void PYTHON_end_eqn(void *eq)
+{
+   fprintf(code, "\n\n");
+}
+
+//----------------------------------------------------------------------//
+//
 //  Connect up the public routines.
 //
 //----------------------------------------------------------------------//
@@ -1273,6 +1299,8 @@ void Python_setup(void)
    lang_begin_file(PYTHON_begin_file);
    lang_end_file(PYTHON_end_file);
    lang_declare(PYTHON_declare);
+   lang_begin_eqn(PYTHON_begin_eqn);
+   lang_end_eqn(PYTHON_end_eqn);
    lang_begin_block(PYTHON_begin_block);
    lang_show_symbol(PYTHON_show_symbol);
 

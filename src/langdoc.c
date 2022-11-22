@@ -32,6 +32,10 @@ in OxGS limiting it to single periods.\n\
 Support an Ox implementation of Newton's Method for simple\n\
 models.\n\
 \n\
+### python\n\
+\n\
+Support the Python implementation of the MSG/G-Cubed solution algorithm.\n\
+\n\
 ### tablo\n\
 \n\
 Support GEMPACK's TABLO language.\n\
