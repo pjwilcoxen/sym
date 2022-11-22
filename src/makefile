@@ -43,6 +43,22 @@ ifeq ($(TAR),watcom)
 endif
 
 #
+# Geoff Shuetrim 2022-11-22 Enable compilation on MacOS
+# OPT settings address problems with Darwin 'standard' libraries
+#
+ifeq ($(shell uname), Darwin)
+	TAR  = gcc
+	CC   = gcc
+	OBJ  = o
+	EXE  = sym
+	EOPT = -o $(EXE)
+	OPT  = -g -D_POSIX_C_SOURCE=200809L -include strings.h
+	YACC = yacc
+endif
+# End of changes by Geoff Shuetrim
+
+
+#
 #  List of core modules
 #
 
@@ -98,7 +114,8 @@ $(EXE) : sym.$(OBJ) $(OBJS) $(LANGS)
 	$(CC) $(OPT) $(EOPT) sym.$(OBJ) $(OBJS) $(LANGLINK)
 
 build.h : $(OBJS) $(LANGS) sym.c sym.h version.h
-	lastbuild
+# Geoff Shuetrim 2022-11-22 commented out this next line:
+#	lastbuild
 
 #
 #  add -t flag to yacc for parser debugging messages
