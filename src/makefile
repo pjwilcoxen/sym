@@ -72,8 +72,8 @@ OBJS = $(addsuffix .$(OBJ), $(SRC_CORE))
 #
 #  List of language modules
 #
-
-SRC_LANG = debug html msgproc oxgs oxgst oxnewton setup tablo troll
+# Geoff Shuetrim 2022-11-22 Added python
+SRC_LANG = debug html msgproc oxgs oxgst oxnewton python setup tablo troll
 
 LANGS = $(addprefix lang/,$(addsuffix .$(OBJ), $(SRC_LANG)))
 
@@ -147,6 +147,7 @@ clean:
 # header file dependencies 
 #    built by gcc -MM *.c lang/*.c
 #
+# Geoff Shuetrim 2022-11-22 Updated the following to include python language
 
 assoc.$(OBJ): assoc.c assoc.h error.h str.h sym.h xmalloc.h
 cart.$(OBJ): cart.c cart.h lists.h error.h sets.h sym.h xmalloc.h
@@ -203,6 +204,10 @@ oxgst.$(OBJ): lang/oxgst.c lang/../error.h lang/../eqns.h lang/../nodes.h \
 oxnewton.$(OBJ): lang/oxnewton.c lang/../cart.h lang/../lists.h lang/../eqns.h \
  lang/../nodes.h lang/../error.h lang/../lang.h lang/../options.h \
  lang/../output.h lang/../str.h lang/../sym.h lang/../symtable.h
+python.o: lang/python.c lang/../cart.h lang/../lists.h lang/../eqns.h \
+  lang/../nodes.h lang/../error.h lang/../lang.h lang/../options.h \
+  lang/../output.h lang/../sets.h lang/../str.h lang/../sym.h \
+  lang/../symtable.h
 setup.$(OBJ): lang/setup.c lang/../lang.h
 tablo.$(OBJ): lang/tablo.c lang/../assoc.h lang/../error.h lang/../lang.h \
  lang/../options.h lang/../output.h lang/../lists.h lang/../sets.h \
