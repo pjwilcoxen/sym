@@ -830,7 +830,13 @@ void PYTHON_begin_file(char *basename)
    vecname[X1R] = "x1r";
    vecname[UNK] = "";
 
-   fprintf(code, "def msgproc(z1r,zer,yjr,yxr,exo,exz):\n");
+   fprintf(code, "import numpy as np\n");
+   fprintf(code, "from math import exp\n");
+   fprintf(code, "from math import log\n");
+   fprintf(code, "\n");
+   fprintf(code, "\n");
+   fprintf(code, "def msgproc(x1l:np.ndarray, j1l:np.ndarray, zel:np.ndarray, z1l:np.ndarray, x1r:np.ndarray, j1r:np.ndarray, z1r:np.ndarray, zer:np.ndarray, yjr:np.ndarray, yxr:np.ndarray, exo:np.ndarray, exz:np.ndarray, par:np.ndarray):\n");
+   fprintf(code, "\n");
 }
 
 //----------------------------------------------------------------------//
